@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tvStartTimeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="START"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvCurrentRotationLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ROTATION"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvStartTimeLabel"
+        app:layout_constraintEnd_toStartOf="@+id/tvCurrentTimeLabel"
+        app:layout_constraintStart_toEndOf="@+id/tvStartTimeLabel"
+        app:layout_constraintTop_toTopOf="@+id/tvStartTimeLabel" />
+
+    <TextView
+        android:id="@+id/tvCurrentTimeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TIME"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvCurrentRotationLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvCurrentRotationLabel" />
+
+    <TextView
+        android:id="@+id/tvStartTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="HH:MM:SS"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvStartTimeLabel" />
+
+    <TextView
+        android:id="@+id/tvCurrentRotation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvStartTime"
+        app:layout_constraintEnd_toStartOf="@+id/tvCurrentTime"
+        app:layout_constraintStart_toEndOf="@+id/tvStartTime"
+        app:layout_constraintTop_toTopOf="@+id/tvStartTime" />
+
+    <TextView
+        android:id="@+id/tvCurrentTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="HH:MM:SS"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvCurrentRotation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvCurrentRotation" />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvCurrentInformationList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvCurrentRotation" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

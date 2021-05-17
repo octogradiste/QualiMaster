@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/miCrucialInformation"
+        android:enabled="true"
+        android:icon="@drawable/ic_info"
+        android:title="Info" />
+
+    <item
+        android:id="@+id/miAthleteLocation"
+        android:enabled="true"
+        android:icon="@drawable/ic_location"
+        android:title="Location" />
+
+    <item
+        android:id="@+id/miRotationHistory"
+        android:enabled="true"
+        android:icon="@drawable/ic_history"
+        android:title="History" />
+
+</menu>

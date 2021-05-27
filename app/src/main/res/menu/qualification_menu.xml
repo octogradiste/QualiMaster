@@ -3,9 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/miRefresh"
+        android:icon="@drawable/ic_refresh"
+        android:title="Refresh"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/miOpenFile"
         android:icon="@drawable/ic_open_file"
         android:title="Open File"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
 </menu>

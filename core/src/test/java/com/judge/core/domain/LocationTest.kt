@@ -111,7 +111,7 @@ class LocationTest {
     inner class AthletesInIsolationMethod {
 
         @Test
-        fun `first athlete in isolation is -3 and total participants -3, returns -3 until 3`() {
+        fun `first athlete in isolation is -3 and total participants 3, returns -3 until 3`() {
             val athletes = Location.athletesInIsolation(-3, 3)
             assertThat(athletes).containsExactlyElementsIn(listOf(-3, -2, -1, 0, 1, 2))
         }
@@ -343,6 +343,44 @@ class LocationTest {
             assertThat(athletes).containsExactlyElementsIn(listOf(0, 3, 5, 6)).inOrder()
         }
 
+    }
+
+    @Nested
+    @DisplayName("athleteOnBoulder method")
+    inner class AthleteOnBoulderMethod {
+
+        @ParameterizedTest
+        @ValueSource(ints = [6, 4, 2, 0])
+        fun `at rotation 7, 5 athletes climbing, athletes 6, 4, 2, 0 are on a boulder`(athlete: Int) {
+            val boulder = Location.athleteOnBoulder(7, athlete, 5)
+            assertThat(boulder).isGreaterThan(0)
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = [-1, -2, -3, -4, -10, -20])
+        fun `negative athletes return zero at rotation 4, with 4 athletes climbing`(athlete: Int) {
+            val boulder = Location.athleteOnBoulder(4, athlete, 4)
+            assertThat(boulder).isEqualTo(0)
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = [10, 5, 3, 1, -1, -30])
+        fun `at rotation 7, 5 athletes climbing, athletes 10, 5, 3, 1, -1, -30 are not on a boulder`(athlete: Int) {
+            val boulder = Location.athleteOnBoulder(7, athlete, 5)
+            assertThat(boulder).isEqualTo(0)
+        }
+
+        @Test
+        fun `at rotation 10, 3 athletes climbing, athlete 7 is on a boulder`() {
+            val boulder = Location.athleteOnBoulder(10, 7, 3)
+            assertThat(boulder).isEqualTo(2)
+        }
+
+        @Test
+        fun `at rotation 7, 5 athletes climbing, athlete 0 is on boulder 4`() {
+            val boulder = Location.athleteOnBoulder(7, 0, 5)
+            assertThat(boulder).isEqualTo(4)
+        }
     }
     
 }

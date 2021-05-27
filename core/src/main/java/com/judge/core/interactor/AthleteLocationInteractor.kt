@@ -10,6 +10,8 @@ import com.judge.core.interactor.usecase.rotation.SubscribeCurrentRotationUseCas
 import com.judge.core.interactor.usecase.athlete.AthleteIsolationBlockUseCase
 import com.judge.core.interactor.usecase.athlete.AthleteMovingBlockUseCase
 import com.judge.core.presentation.AthleteListItem
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 
 class AthleteLocationInteractor(
         private val athleteBoulderBlock: AthleteBoulderBlockUseCase,
@@ -22,34 +24,35 @@ class AthleteLocationInteractor(
 ) {
 
     suspend fun createAthleteLocationBlock(
-            rotation: Int, comp: Competition): Result<List<AthleteListItem>> {
-        val list = mutableListOf<AthleteListItem>()
+            rotation: Int, comp: Competition
+    ): Result<List<AthleteListItem>> = coroutineScope {
+        val athleteLocation = mutableListOf<AthleteListItem>()
 
-        when(val block = athleteBoulderBlock(rotation, comp, "Current")) {
-            is Result.Success -> list.addAll(block.value)
-            is Result.Error -> return block
+        val climbingDeferred = async { athleteBoulderBlock(rotation, comp, "Climbing") }
+        val transitDeferred = async { athleteTransitBlock(rotation, comp, "Transit Zone") }
+        val movingDeferred = async { athleteMovingBlock(rotation, comp,"Moving") }
+        val isolationDeferred = async { athleteIsolationBlock(rotation, comp,"Isolation") }
+
+        when(val climbing = climbingDeferred.await()) {
+            is Result.Success -> athleteLocation.addAll(climbing.value)
+            is Result.Error -> return@coroutineScope climbing
         }
 
-        when(val block = athleteBoulderBlock(rotation + 1, comp, "Next")) {
-            is Result.Success -> list.addAll(block.value)
-            is Result.Error -> return block
+        when(val transit = transitDeferred.await()) {
+            is Result.Success -> athleteLocation.addAll(transit.value)
+            is Result.Error -> return@coroutineScope transit
         }
 
-        when(val block = athleteTransitBlock(rotation, comp,"In Transit Zone")) {
-            is Result.Success -> list.addAll(block.value)
-            is Result.Error -> return block
+        when(val moving = movingDeferred.await() ) {
+            is Result.Success -> athleteLocation.addAll(moving.value)
+            is Result.Error -> return@coroutineScope moving
         }
 
-        when(val block = athleteMovingBlock(rotation, comp,"Moving")) {
-            is Result.Success -> list.addAll(block.value)
-            is Result.Error -> return block
+        when(val isolation = isolationDeferred.await()) {
+            is Result.Success -> athleteLocation.addAll(isolation.value)
+            is Result.Error -> return@coroutineScope isolation
         }
 
-        when(val block = athleteIsolationBlock(rotation, comp,"Isolation")) {
-            is Result.Success -> list.addAll(block.value)
-            is Result.Error -> return block
-        }
-
-        return Result.Success(list)
+        return@coroutineScope Result.Success(athleteLocation)
     }
 }

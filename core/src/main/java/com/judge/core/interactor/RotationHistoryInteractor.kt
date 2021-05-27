@@ -7,6 +7,9 @@ import com.judge.core.interactor.usecase.athlete.AthleteBoulderBlockUseCase
 import com.judge.core.interactor.usecase.competition.RefreshCompetitionUseCase
 import com.judge.core.interactor.usecase.competition.SubscribeCompetitionUseCase
 import com.judge.core.presentation.AthleteListItem
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 
 class RotationHistoryInteractor(
         private val athleteBoulderBlock: AthleteBoulderBlockUseCase,
@@ -16,11 +19,19 @@ class RotationHistoryInteractor(
     suspend fun createRotationHistory(comp: Competition): Result<List<AthleteListItem>> {
         val list = mutableListOf<AthleteListItem>()
 
-        val maxAthletes = comp.categories.maxOf { it.numOfAthletes }
+        val maxAthletes = if (comp.categories.isEmpty()) 0 else comp.categories.maxOf { it.numOfAthletes }
         val maxRotation = RotationPeriod.maxRotation(comp.numOfAthletesClimbing, maxAthletes)
 
-        for (rotation in 1..maxRotation) {
-            when(val block = athleteBoulderBlock(rotation, comp, "Rotation $rotation")) {
+        val blocksDeferred = mutableListOf<Deferred<Result<List<AthleteListItem>>>>()
+
+        coroutineScope {
+            for (rotation in 1..maxRotation) {
+                blocksDeferred.add(async{ athleteBoulderBlock(rotation,comp, "Rotation $rotation") })
+            }
+        }
+
+        for (blockDeferred in blocksDeferred) {
+            when(val block = blockDeferred.await()) {
                 is Result.Success -> list.addAll(block.value)
                 is Result.Error -> return block
             }

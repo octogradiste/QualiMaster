@@ -17,12 +17,15 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
+import com.judge.core.data.Repository
+import com.judge.core.domain.Location
 import com.judge.qualimaster.R
 import com.judge.qualimaster.data.AppDatabase
 import com.judge.qualimaster.data.AthleteDao
+import com.judge.qualimaster.data.BaseRepositoryImpl
 import com.judge.qualimaster.databinding.ActivityQualificationBinding
-import com.judge.qualimaster.io.CSVReader
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import java.io.File
 import java.io.FileInputStream
 import javax.inject.Inject
@@ -33,6 +36,7 @@ class QualificationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityQualificationBinding
     @Inject lateinit var athleteDao: AthleteDao
     @Inject lateinit var db: AppDatabase
+    @Inject lateinit var repository: Repository
 
     private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
@@ -49,6 +53,8 @@ class QualificationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityQualificationBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        repository = Repository(BaseRepositoryImpl(athleteDao), Location)
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
@@ -69,6 +75,15 @@ class QualificationActivity : AppCompatActivity() {
                 getContent.launch("text/*")
                 true
             }
+            R.id.miRefresh -> {
+                lifecycleScope.launchWhenStarted {
+                    showProgressBar(true)
+//                    delay(1000)
+                    repository.sync() // TODO: change to refresh only comp
+                    showProgressBar(false)
+                }
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -77,9 +92,9 @@ class QualificationActivity : AppCompatActivity() {
         val inputStream = contentResolver.openInputStream(uri)
 
         if (inputStream != null) {
-            val reader = CSVReader(inputStream)
-            val athletes = reader.getAthletes()
-            athleteDao.insertAthletes(athletes)
+//            val reader = CSVReader(inputStream)
+//            val athletes = reader.getAthletes()
+//            athleteDao.insertAthletes(athletes)
             Toast.makeText(this, "Successfully loaded CSV", Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(this, "Problem while loading file in ${uri.path}", Toast.LENGTH_SHORT).show()

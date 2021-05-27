@@ -7,4 +7,5 @@ data class Athlete(
         val lastName: String,
         val licence: Int,
         val category: Category,
+        val competitionId: Long,
 )

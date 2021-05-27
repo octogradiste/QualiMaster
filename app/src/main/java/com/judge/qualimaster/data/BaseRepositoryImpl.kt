@@ -6,47 +6,78 @@ import com.judge.core.domain.model.Category
 import com.judge.core.domain.model.Competition
 import com.judge.core.domain.result.Response
 import com.judge.core.domain.result.Result
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.*
 
-class BaseRepositoryImpl : BaseRepository {
+class BaseRepositoryImpl(
+    private val athleteDao: AthleteDao,
+) : BaseRepository {
 
-    private val category = Category(0, "c1", 3)
+    private val category = Category(0, "c1", 4, 1)
     private val athletes = listOf(
-            Athlete(1, 0, "Adam", "Ondra", 1234, category),
-            Athlete(3, 1, "Alex", "Megos", 2345, category),
-            Athlete(2, 2, "Magnus", "Mitboe", 3456, category)
+            Athlete(1, 0, "Adam", "Ondra", 1234, category, 1),
+            Athlete(31, 1, "Alex", "Megos", 2345, category, 1),
+            Athlete(12, 2, "Magnus", "Mitboe", 3456, category, 1),
+            Athlete(15, 3, "Sascha", "Lehmann", 4567, category, 1),
     )
-
-    private var comp = Competition(
+    private val competition = Competition(
             0,
             "test",
             "jvm",
-            1620797607984L,
+            1621490788852L,
             5,
             5,
             1,
             listOf(category)
     )
 
-    private val compState = MutableStateFlow(comp)
+    override suspend fun insertAthletes(athletes: List<Athlete>): Response {
+        athleteDao.insertAthletes(athletes.map { it.toEntity() })
+        return Response.Success("Successfully inserted athletes")
+    }
 
-    override suspend fun sync(): Response = Response.Success("Successfully synced data.")
+    override suspend fun insertCategories(categories: List<Category>): Response {
+        athleteDao.insertCategories(categories.map { it.toEntity() })
+        return Response.Success("Successfully inserted categories")
+    }
 
-    override suspend fun refreshCompetition(competitionId: Int): Response = Response.Success("Successfully refreshed competition.")
+    override suspend fun insertCompetitions(competitions: List<Competition>): Response {
+        athleteDao.insertCompetitions(competitions.map { it.toEntity() })
+        return Response.Success("Successfully inserted competitions")
+    }
 
-    override suspend fun setStartTime(competitionId: Int, time: Long): Response {
-        compState.value = compState.value.copy(startTime = time)
+    override suspend fun sync(): Response {
+        insertAthletes(athletes)
+        insertCategories(listOf(category))
+        insertCompetitions(listOf(competition))
+        return Response.Success("Successfully synced data.")
+    }
+
+    override suspend fun refreshCompetition(competitionId: Long): Response {
+        return Response.Success("Successfully refreshed competition.")
+    }
+
+    override suspend fun setStartTime(competition: Competition, time: Long): Response {
+        athleteDao.updateCompetition(competition.copy(startTime = time).toEntity())
         return Response.Success("Successfully set start time")
     }
 
-    override fun subscribeCompetition(competitionId: Int): StateFlow<Competition> = compState.asStateFlow()
+    override suspend fun subscribeCompetition(
+        competitionId: Long,
+        externalScope: CoroutineScope
+    ): StateFlow<Competition> {
+        val categories = athleteDao.getCategories(competitionId).map { it.toCategory() }
+        val subscription = athleteDao.subscribeCompetition(competitionId)
+        return subscription
+            .filterNotNull()
+            .map {
+                it.toCompetition(categories)
+            }
+            .stateIn(externalScope)
+    }
 
-    override suspend fun getAthletesByStartOrder(competitionId: Int, order: List<Int>, category: Category): Result<List<Athlete>> {
-        return Result.Success(athletes
-            .filter { athlete -> athlete.startOrder in order && athlete.category == category }
-            .sortedBy { athlete -> athlete.category.name }
-            .sortedBy { athlete -> athlete.startOrder})
+    override suspend fun getAthletesByStartOrder(competitionId: Long, order: List<Int>): Result<List<Athlete>> {
+        val athletes = athleteDao.getAthletesByStartOrder(competitionId, order)
+        return Result.Success(athletes.map { it.toAthlete()})
     }
 }

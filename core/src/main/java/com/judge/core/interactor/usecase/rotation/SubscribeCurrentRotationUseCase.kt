@@ -18,7 +18,7 @@ class SubscribeCurrentRotationUseCase(
 
     private val currentRotation = MutableStateFlow(0)
 
-    operator fun invoke(competitionId: Int): StateFlow<Int> {
+    suspend operator fun invoke(competitionId: Long): StateFlow<Int> {
         val competition = subscribeCompetition(competitionId)
         val time = currentTime()
 

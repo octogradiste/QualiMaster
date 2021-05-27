@@ -1,5 +1,6 @@
 package com.judge.core.presentation.presenter
 
+import com.judge.core.domain.model.Competition
 import com.judge.core.domain.result.Response
 import com.judge.core.domain.result.Result
 import com.judge.core.interactor.RotationHistoryInteractor
@@ -8,17 +9,18 @@ import com.judge.core.presentation.state.AthleteListState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class RotationHistoryPresenter(
-        private val competitionId: Int,
+        private val competitionId: Long,
         private val interactor: RotationHistoryInteractor,
         private val ioDispatcher: CoroutineDispatcher,
         externalScope: CoroutineScope,
 ) {
-    private val comp = interactor.subscribeCompetition(competitionId)
+    private lateinit var comp: StateFlow<Competition>
 
     private val _rotationHistory = MutableStateFlow(emptyList<AthleteListItem>())
     private val _athleteListState = MutableStateFlow<AthleteListState>(AthleteListState.Loading)
@@ -31,6 +33,8 @@ class RotationHistoryPresenter(
             // refresh()
 
             // TODO when refreshing show rebuild list
+
+            comp = interactor.subscribeCompetition(competitionId)
 
             withContext(ioDispatcher) {
                 when (val result = interactor.createRotationHistory(comp.value)) {

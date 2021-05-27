@@ -1,5 +1,6 @@
 package com.judge.core.presentation.presenter
 
+import com.judge.core.domain.model.Competition
 import com.judge.core.domain.result.Response
 import com.judge.core.domain.result.Result
 import com.judge.core.interactor.CrucialInformationInteractor
@@ -12,7 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class CrucialInformationPresenter (
-        private val competitionId: Int,
+        private val competitionId: Long,
         private val interactor: CrucialInformationInteractor,
         private val ioDispatcher: CoroutineDispatcher,
         externalScope: CoroutineScope,
@@ -22,30 +23,38 @@ class CrucialInformationPresenter (
     private val _crucialInformation = MutableStateFlow(emptyList<AthleteListItem>())
     private val _athleteListState = MutableStateFlow<AthleteListState>(AthleteListState.Loading)
 
-    private val comp = interactor.subscribeCompetition(competitionId)
+    private lateinit var comp: StateFlow<Competition>
+    private val _currentRotation = MutableStateFlow(0)
 
     val startTime = _startTime.asStateFlow()
     val crucialInformation = _crucialInformation.asStateFlow()
     val athleteListState = _athleteListState.asStateFlow()
 
     val currentTime = interactor.subscribeCurrentTime()
-    val currentRotation = interactor.subscribeCurrentRotation(competitionId)
+    val currentRotation = _currentRotation.asStateFlow()
 
     init {
         externalScope.launch {
             // refresh()
+            comp = interactor.subscribeCompetition(competitionId)
 
-            comp.collect { comp ->
-                _startTime.value = comp.startTime
+            launch {
+                comp.collect { comp ->
+                    _startTime.value = comp.startTime
+                }
             }
 
-            currentRotation.collect { rotation ->
-                withContext(ioDispatcher) {
-                    when(val result = interactor.createCrucialInformation(rotation, comp.value)) {
-                        is Result.Success -> _crucialInformation.value = result.value
-                        is Result.Error -> {
-                            _crucialInformation.value = emptyList()
-                            _athleteListState.value = AthleteListState.Error(result.msg)
+            launch {
+                val rotation = interactor.subscribeCurrentRotation(competitionId)
+                rotation.collect { rot ->
+                    _currentRotation.value = rot
+                    withContext(ioDispatcher) {
+                        when(val result = interactor.createCrucialInformation(rot, comp.value)) {
+                            is Result.Success -> _crucialInformation.value = result.value
+                            is Result.Error -> {
+                                _crucialInformation.value = emptyList()
+                                _athleteListState.value = AthleteListState.Error(result.msg)
+                            }
                         }
                     }
                 }
@@ -72,7 +81,7 @@ class CrucialInformationPresenter (
      */
     suspend fun setStartTime(time: Long): Response {
         return withContext(ioDispatcher) {
-            return@withContext interactor.setStartTime(competitionId, time)
+            return@withContext interactor.setStartTime(comp.value, time)
         }
     }
 }

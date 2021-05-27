@@ -6,28 +6,16 @@ import com.judge.core.domain.result.Result
 import com.judge.core.presentation.AthleteListItem
 
 class AthleteMovingBlockUseCase(
-        private val repository: Repository
+        private val repository: Repository,
+        private val athleteBlock: AthleteBlockUseCase
 ) {
 
     suspend operator fun invoke(
             rotation: Int, comp: Competition, title: String
     ): Result<List<AthleteListItem>> {
-        val list = mutableListOf<AthleteListItem>()
-        for (category in comp.categories) {
-            when (val result = repository.getAthletesMoving(rotation, comp, category)) {
-                is Result.Success -> {
-                    if (result.value.isNotEmpty()) {
-                        list.add(AthleteListItem.CategoryItem(category))
-                        list.addAll(result.value.map { AthleteListItem.AthleteItem(it) })
-                    }
-                }
-                is Result.Error -> return result
-            }
+        return when(val result = repository.getAthletesMoving(rotation, comp)) {
+            is Result.Success -> Result.Success(athleteBlock(title, result.value, comp))
+            is Result.Error -> result
         }
-        if (list.isNotEmpty()) {
-            list.add(0, AthleteListItem.HeaderItem(title))
-        }
-        return Result.Success(list)
     }
-
 }

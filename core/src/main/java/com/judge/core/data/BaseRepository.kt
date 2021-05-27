@@ -5,6 +5,8 @@ import com.judge.core.domain.model.Competition
 import com.judge.core.domain.model.Category
 import com.judge.core.domain.result.Response
 import com.judge.core.domain.result.Result
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 
@@ -15,16 +17,21 @@ interface BaseRepository {
      */
     suspend fun sync(): Response
 
-    suspend fun refreshCompetition(competitionId: Int): Response
+    suspend fun insertAthletes(athletes: List<Athlete>): Response
 
-    suspend fun setStartTime(competitionId: Int, time: Long): Response
+    suspend fun insertCategories(categories: List<Category>): Response
 
-    fun subscribeCompetition(competitionId: Int): StateFlow<Competition>
+    suspend fun insertCompetitions(competitions: List<Competition>): Response
+
+    suspend fun refreshCompetition(competitionId: Long): Response
+
+    suspend fun setStartTime(competition: Competition, time: Long): Response
+
+    suspend fun subscribeCompetition(competitionId: Long, externalScope: CoroutineScope): StateFlow<Competition>
 
     suspend fun getAthletesByStartOrder(
-            competitionId: Int,
+            competitionId: Long,
             order: List<Int>,
-            category: Category
     ): Result<List<Athlete>>
 
 }

@@ -4,26 +4,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.judge.core.data.Repository
-import com.judge.core.domain.Location
 import com.judge.core.interactor.RotationHistoryInteractor
+import com.judge.core.interactor.usecase.athlete.AthleteBlockUseCase
 import com.judge.core.interactor.usecase.athlete.AthleteBoulderBlockUseCase
 import com.judge.core.interactor.usecase.competition.RefreshCompetitionUseCase
 import com.judge.core.interactor.usecase.competition.SubscribeCompetitionUseCase
 import com.judge.core.presentation.presenter.RotationHistoryPresenter
-import com.judge.core.util.tick.TickHandler
-import com.judge.core.util.tick.TickHandlerImpl
-import com.judge.qualimaster.data.BaseRepositoryImpl
-import com.judge.qualimaster.util.ClockImpl
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import javax.inject.Inject
 
-class RotationHistoryViewModel : ViewModel() {
-    private val competitionId = 0
-    private val repository = Repository(BaseRepositoryImpl(), Location)
-    private val tickHandler: TickHandler = TickHandlerImpl(viewModelScope, ClockImpl())
+@HiltViewModel
+class RotationHistoryViewModel @Inject constructor(repository: Repository) : ViewModel() {
+    private val competitionId = 1L
 
     private val interactor = RotationHistoryInteractor(
-            AthleteBoulderBlockUseCase(repository),
-            SubscribeCompetitionUseCase(repository),
+            AthleteBoulderBlockUseCase(repository, AthleteBlockUseCase()),
+            SubscribeCompetitionUseCase(repository, viewModelScope),
             RefreshCompetitionUseCase(repository),
     )
 

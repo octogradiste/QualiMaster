@@ -6,8 +6,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.judge.core.presentation.AthleteListItem
 import com.judge.qualimaster.R
-import com.judge.qualimaster.data.Athlete
-import com.judge.qualimaster.data.Boulder
 import com.judge.qualimaster.databinding.ViewholderAthleteBinding
 import com.judge.qualimaster.databinding.ViewholderBoulderBinding
 import com.judge.qualimaster.databinding.ViewholderHeaderBinding

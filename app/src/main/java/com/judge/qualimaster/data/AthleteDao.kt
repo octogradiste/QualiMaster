@@ -1,37 +1,36 @@
 package com.judge.qualimaster.data
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.judge.core.domain.model.Category
+import com.judge.core.domain.model.Competition
+import com.judge.qualimaster.data.entities.AthleteEntity
+import com.judge.qualimaster.data.entities.CategoryEntity
+import com.judge.qualimaster.data.entities.CompetitionEntity
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 @Dao
 interface AthleteDao {
 
-    @Query("SELECT * FROM athletes")
-    fun getAllAthletes(): Flow<List<Athlete>>
+    @Insert
+    suspend fun insertAthletes(athletes: List<AthleteEntity>)
 
-    @Query("SELECT * FROM athletes WHERE athleteNumber = :athleteNumber")
-    fun getAthlete(athleteNumber: Int): Athlete?
+    @Insert
+    suspend fun insertCategories(categories: List<CategoryEntity>)
 
-    @Query("SELECT * FROM athletes WHERE startNumber = :startNumber")
-    fun getAthleteByStartNumber(startNumber: Int) : Athlete?
+    @Insert
+    suspend fun insertCompetitions(competitions: List<CompetitionEntity>)
 
-    @Query("SELECT * FROM athletes WHERE startNumber IN (:startNumbers)")
-    fun getAthletesByStartNumber(startNumbers: List<Int>): List<Athlete>
+    @Update
+    suspend fun updateCompetition(comp: CompetitionEntity)
 
-    @Query("SELECT * FROM athletes WHERE startNumber IN (:startNumbers) ORDER BY startNumber DESC")
-    fun getAthletesByStartNumberOrdered(startNumbers: List<Int>): List<Athlete>
+    @Query("SELECT * FROM competitions WHERE competitionId == :competitionId")
+    fun subscribeCompetition(competitionId: Long): Flow<CompetitionEntity?>
 
-    @Query("SELECT COUNT(*) FROM athletes")
-    fun countAthletes() : Int
+    @Query("SELECT * FROM categories WHERE competitionId == :competitionId")
+    suspend fun getCategories(competitionId: Long): List<CategoryEntity>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAthlete(athlete: Athlete)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAthletes(athletes: List<Athlete>)
-
-    @Delete
-    suspend fun deleteAthlete(athlete: Athlete)
+    @Query("SELECT * FROM athletes WHERE competitionId == :competitionId AND startOrder in (:order)")
+    suspend fun getAthletesByStartOrder(competitionId: Long, order: List<Int>): List<AthleteEntity>
 
 }

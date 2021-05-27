@@ -4,9 +4,15 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.judge.qualimaster.data.entities.AthleteEntity
+import com.judge.qualimaster.data.entities.CategoryEntity
+import com.judge.qualimaster.data.entities.CompetitionEntity
 import com.judge.qualimaster.util.Constants.DATABASE_NAME
 
-@Database(entities = [Athlete::class], version = 1)
+@Database(
+    entities = [AthleteEntity::class, CategoryEntity::class, CompetitionEntity::class],
+    version = 7
+)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun athleteDao(): AthleteDao
@@ -27,7 +33,5 @@ abstract class AppDatabase : RoomDatabase() {
                 .allowMainThreadQueries()
                 .build()
         }
-
     }
-
 }

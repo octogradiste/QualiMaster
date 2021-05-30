@@ -24,13 +24,19 @@ class CrucialInformationInteractor(
 ) {
 
     suspend fun createCrucialInformation(
-            rotation: Int, comp: Competition
+            rotation: Result<Int>, comp: Result<Competition>
     ): Result<List<AthleteListItem>> = coroutineScope {
             val crucialInformation = mutableListOf<AthleteListItem>()
 
-            val currentDeferred = async { athleteBoulderBlock(rotation, comp, "Current") }
-            val nextDeferred = async { athleteBoulderBlock(rotation + 1, comp, "Next") }
-            val transitDeferred = async { athleteTransitBlock(rotation, comp, "Transit Zone") }
+            if (comp is Result.Error) return@coroutineScope comp
+            if (rotation is Result.Error) return@coroutineScope rotation
+
+            comp as Result.Success
+            rotation as Result.Success
+
+            val currentDeferred = async { athleteBoulderBlock(rotation.value, comp.value, "Current") }
+            val nextDeferred = async { athleteBoulderBlock(rotation.value + 1, comp.value, "Next") }
+            val transitDeferred = async { athleteTransitBlock(rotation.value, comp.value, "Transit Zone") }
 
             when(val current = currentDeferred.await()) {
                 is Result.Success -> crucialInformation.addAll(current.value)

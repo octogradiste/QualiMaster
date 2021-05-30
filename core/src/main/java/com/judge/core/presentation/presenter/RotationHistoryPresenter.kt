@@ -20,7 +20,7 @@ class RotationHistoryPresenter(
         private val ioDispatcher: CoroutineDispatcher,
         externalScope: CoroutineScope,
 ) {
-    private lateinit var comp: StateFlow<Competition>
+    private lateinit var comp: StateFlow<Result<Competition>>
 
     private val _rotationHistory = MutableStateFlow(emptyList<AthleteListItem>())
     private val _athleteListState = MutableStateFlow<AthleteListState>(AthleteListState.Loading)
@@ -34,7 +34,7 @@ class RotationHistoryPresenter(
 
             // TODO when refreshing show rebuild list
 
-            comp = interactor.subscribeCompetition(competitionId)
+            comp = interactor.subscribeCompetition(competitionId, externalScope)
 
             withContext(ioDispatcher) {
                 when (val result = interactor.createRotationHistory(comp.value)) {

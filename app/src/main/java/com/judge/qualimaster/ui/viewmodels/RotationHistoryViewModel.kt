@@ -20,7 +20,7 @@ class RotationHistoryViewModel @Inject constructor(repository: Repository) : Vie
 
     private val interactor = RotationHistoryInteractor(
             AthleteBoulderBlockUseCase(repository, AthleteBlockUseCase()),
-            SubscribeCompetitionUseCase(repository, viewModelScope),
+            SubscribeCompetitionUseCase(repository),
             RefreshCompetitionUseCase(repository),
     )
 

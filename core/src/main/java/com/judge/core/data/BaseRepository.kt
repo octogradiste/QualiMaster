@@ -27,7 +27,7 @@ interface BaseRepository {
 
     suspend fun setStartTime(competition: Competition, time: Long): Response
 
-    suspend fun subscribeCompetition(competitionId: Long, externalScope: CoroutineScope): StateFlow<Competition>
+    suspend fun subscribeCompetition(competitionId: Long, externalScope: CoroutineScope): StateFlow<Result<Competition>>
 
     suspend fun getAthletesByStartOrder(
             competitionId: Long,

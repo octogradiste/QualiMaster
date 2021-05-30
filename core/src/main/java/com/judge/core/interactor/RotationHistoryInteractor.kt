@@ -16,17 +16,21 @@ class RotationHistoryInteractor(
         val subscribeCompetition: SubscribeCompetitionUseCase,
         val refreshCompetition: RefreshCompetitionUseCase,
 ) {
-    suspend fun createRotationHistory(comp: Competition): Result<List<AthleteListItem>> {
+    suspend fun createRotationHistory(comp: Result<Competition>): Result<List<AthleteListItem>> {
         val list = mutableListOf<AthleteListItem>()
 
-        val maxAthletes = if (comp.categories.isEmpty()) 0 else comp.categories.maxOf { it.numOfAthletes }
-        val maxRotation = RotationPeriod.maxRotation(comp.numOfAthletesClimbing, maxAthletes)
+        if (comp is Result.Error) return comp
+
+        comp as Result.Success
+
+        val maxAthletes = if (comp.value.categories.isEmpty()) 0 else comp.value.categories.maxOf { it.numOfAthletes }
+        val maxRotation = RotationPeriod.maxRotation(comp.value.numOfAthletesClimbing, maxAthletes)
 
         val blocksDeferred = mutableListOf<Deferred<Result<List<AthleteListItem>>>>()
 
         coroutineScope {
             for (rotation in 1..maxRotation) {
-                blocksDeferred.add(async{ athleteBoulderBlock(rotation,comp, "Rotation $rotation") })
+                blocksDeferred.add(async{ athleteBoulderBlock(rotation, comp.value, "Rotation $rotation") })
             }
         }
 

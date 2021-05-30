@@ -22,7 +22,6 @@ import javax.inject.Inject
 @HiltViewModel
 class AthleteLocationViewModel @Inject constructor(repository: Repository): ViewModel() {
     private val competitionId = 1L
-    private val tickHandler: TickHandler = TickHandlerImpl(viewModelScope, ClockImpl())
     private val athleteBlock = AthleteBlockUseCase()
 
     private val interactor = AthleteLocationInteractor(
@@ -31,12 +30,11 @@ class AthleteLocationViewModel @Inject constructor(repository: Repository): View
             AthleteMovingBlockUseCase(repository, athleteBlock),
             AthleteIsolationBlockUseCase(repository, athleteBlock),
             SubscribeCurrentRotationUseCase(
-                SubscribeCompetitionUseCase(repository, viewModelScope),
-                SubscribeCurrentTimeUseCase(viewModelScope, tickHandler),
+                SubscribeCompetitionUseCase(repository),
+                SubscribeCurrentTimeUseCase(TickHandlerImpl(ClockImpl())),
                 GetRotationUseCase(),
-                viewModelScope,
             ),
-            SubscribeCompetitionUseCase(repository, viewModelScope),
+            SubscribeCompetitionUseCase(repository),
             RefreshCompetitionUseCase(repository),
     )
 

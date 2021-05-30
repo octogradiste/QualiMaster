@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.swing.plaf.nimbus.State
 
 class AthleteLocationPresenter(
         private val competitionId: Long,
@@ -25,8 +24,8 @@ class AthleteLocationPresenter(
     private val _athleteLocation = MutableStateFlow(emptyList<AthleteListItem>())
     private val _athleteListState = MutableStateFlow<AthleteListState>(AthleteListState.Loading)
 
-    private lateinit var comp: StateFlow<Competition>
-    private lateinit var currentRotation: StateFlow<Int>
+    private lateinit var comp: StateFlow<Result<Competition>>
+    private lateinit var currentRotation: StateFlow<Result<Int>>
 
     val athleteLocation = _athleteLocation.asStateFlow()
     val athleteListState = _athleteListState.asStateFlow()
@@ -34,8 +33,8 @@ class AthleteLocationPresenter(
     init {
         externalScope.launch {
             // refresh()
-            comp = interactor.subscribeCompetition(competitionId)
-            currentRotation = interactor.subscribeCurrentRotation(competitionId)
+            comp = interactor.subscribeCompetition(competitionId, externalScope)
+            currentRotation = interactor.subscribeCurrentRotation(competitionId, externalScope)
             currentRotation.collect { rotation ->
                 withContext(ioDispatcher) {
                     when(val result = interactor.createAthleteLocationBlock(rotation, comp.value)) {

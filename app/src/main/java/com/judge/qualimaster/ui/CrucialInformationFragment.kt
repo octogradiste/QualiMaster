@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.judge.core.domain.result.Response
+import com.judge.core.domain.result.Result
 import com.judge.core.presentation.state.AthleteListState
 import com.judge.qualimaster.R
 import com.judge.qualimaster.adapter.QualificationRecyclerviewAdapter
@@ -39,7 +40,12 @@ class CrucialInformationFragment : Fragment(R.layout.fragment_crucial_informatio
         }
 
         binding.tvStartTime.setOnClickListener {
-            val originalStartTime = viewModel.startTime.value ?: 0L
+            val startTime = viewModel.startTime.value
+            if (startTime is Result.Error) return@setOnClickListener
+
+            startTime as Result.Success
+
+            val originalStartTime = startTime.value
             val calendar = Calendar.getInstance().apply { timeInMillis = originalStartTime }
 
             val picker = createTimePicker(calendar)
@@ -79,7 +85,10 @@ class CrucialInformationFragment : Fragment(R.layout.fragment_crucial_informatio
         })
 
         viewModel.startTime.observe(viewLifecycleOwner, Observer { time ->
-            binding.tvStartTime.text = formatter.format(time)
+            binding.tvStartTime.text = when(time) {
+                is Result.Error -> time.msg
+                is Result.Success -> formatter.format(time.value)
+            }
         })
 
         viewModel.currentTime.observe(viewLifecycleOwner, Observer { time ->
@@ -87,7 +96,10 @@ class CrucialInformationFragment : Fragment(R.layout.fragment_crucial_informatio
         })
 
         viewModel.currentRotation.observe(viewLifecycleOwner, Observer { rotation ->
-            binding.tvCurrentRotation.text = rotation.toString()
+            binding.tvCurrentRotation.text = when(rotation) {
+                is Result.Error -> rotation.msg
+                is Result.Success<Int> -> rotation.value.toString()
+            }
         })
     }
 

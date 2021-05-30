@@ -24,14 +24,20 @@ class AthleteLocationInteractor(
 ) {
 
     suspend fun createAthleteLocationBlock(
-            rotation: Int, comp: Competition
+            rotation: Result<Int>, comp: Result<Competition>
     ): Result<List<AthleteListItem>> = coroutineScope {
         val athleteLocation = mutableListOf<AthleteListItem>()
 
-        val climbingDeferred = async { athleteBoulderBlock(rotation, comp, "Climbing") }
-        val transitDeferred = async { athleteTransitBlock(rotation, comp, "Transit Zone") }
-        val movingDeferred = async { athleteMovingBlock(rotation, comp,"Moving") }
-        val isolationDeferred = async { athleteIsolationBlock(rotation, comp,"Isolation") }
+        if (comp is Result.Error) return@coroutineScope comp
+        if (rotation is Result.Error) return@coroutineScope rotation
+
+        comp as Result.Success
+        rotation as Result.Success
+
+        val climbingDeferred = async { athleteBoulderBlock(rotation.value, comp.value, "Climbing") }
+        val transitDeferred = async { athleteTransitBlock(rotation.value, comp.value, "Transit Zone") }
+        val movingDeferred = async { athleteMovingBlock(rotation.value, comp.value,"Moving") }
+        val isolationDeferred = async { athleteIsolationBlock(rotation.value, comp.value,"Isolation") }
 
         when(val climbing = climbingDeferred.await()) {
             is Result.Success -> athleteLocation.addAll(climbing.value)

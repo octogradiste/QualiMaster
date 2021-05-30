@@ -1,9 +1,11 @@
 package com.judge.qualimaster.ui.viewmodels
 
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.judge.core.data.Repository
 import com.judge.core.interactor.CrucialInformationInteractor
-import com.judge.core.interactor.usecase.*
+import com.judge.core.interactor.usecase.SubscribeCurrentTimeUseCase
 import com.judge.core.interactor.usecase.athlete.AthleteBlockUseCase
 import com.judge.core.interactor.usecase.athlete.AthleteBoulderBlockUseCase
 import com.judge.core.interactor.usecase.athlete.AthleteTransitBlockUseCase
@@ -24,21 +26,20 @@ import javax.inject.Inject
 class CrucialInformationViewModel @Inject constructor(repository: Repository) : ViewModel() {
 
     private val competitionId = 1L
-    private val tickHandler: TickHandler = TickHandlerImpl(viewModelScope, ClockImpl())
+    private val tickHandler: TickHandler = TickHandlerImpl(ClockImpl())
     private val athleteBlock = AthleteBlockUseCase()
 
     private val interactor = CrucialInformationInteractor(
             AthleteBoulderBlockUseCase(repository, athleteBlock),
             AthleteTransitBlockUseCase(repository, athleteBlock),
             SetStartTimeUseCase(repository),
-            SubscribeCurrentTimeUseCase(viewModelScope, tickHandler),
+            SubscribeCurrentTimeUseCase(tickHandler),
             SubscribeCurrentRotationUseCase(
-                SubscribeCompetitionUseCase(repository, viewModelScope),
-                SubscribeCurrentTimeUseCase(viewModelScope, tickHandler),
+                SubscribeCompetitionUseCase(repository),
+                SubscribeCurrentTimeUseCase(tickHandler),
                 GetRotationUseCase(),
-                viewModelScope,
             ),
-            SubscribeCompetitionUseCase(repository, viewModelScope),
+            SubscribeCompetitionUseCase(repository),
             RefreshCompetitionUseCase(repository),
        )
 

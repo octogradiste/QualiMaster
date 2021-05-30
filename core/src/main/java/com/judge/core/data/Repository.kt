@@ -62,7 +62,7 @@ class Repository(
             rotation: Int, comp: Competition
     ) : Result<List<Athlete>> {
         val order = location.athletesInTransitZone(
-                rotation, maxAthleteInCategories(comp), comp.numOfAthletesInBuffer)
+                rotation, comp.numOfAthletesClimbing, comp.numOfAthletesInBuffer)
         val valid = location.extractValidAthletes(order, maxAthleteInCategories(comp))
         return if (valid.isNotEmpty()) {
             baseRepository.getAthletesByStartOrder(comp.competitionId, valid)

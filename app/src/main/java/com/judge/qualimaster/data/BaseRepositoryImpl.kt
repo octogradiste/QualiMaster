@@ -65,19 +65,27 @@ class BaseRepositoryImpl(
     override suspend fun subscribeCompetition(
         competitionId: Long,
         externalScope: CoroutineScope
-    ): StateFlow<Competition> {
-        val categories = athleteDao.getCategories(competitionId).map { it.toCategory() }
+    ): StateFlow<Result<Competition>> {
         val subscription = athleteDao.subscribeCompetition(competitionId)
         return subscription
-            .filterNotNull()
-            .map {
-                it.toCompetition(categories)
+            .map { entity ->
+                if (entity == null) {
+                    Result.Error("The competition $competitionId is not available.}")
+                } else {
+                    val categories = athleteDao.getCategories(competitionId)
+                        .filterNotNull()
+                        .map { it.toCategory() }
+                    if (categories.isEmpty()) {
+                        Result.Error("The competition $competitionId has no categories.")
+                    }
+                    Result.Success(entity.toCompetition(categories))
+                }
             }
             .stateIn(externalScope)
     }
 
     override suspend fun getAthletesByStartOrder(competitionId: Long, order: List<Int>): Result<List<Athlete>> {
         val athletes = athleteDao.getAthletesByStartOrder(competitionId, order)
-        return Result.Success(athletes.map { it.toAthlete()})
+        return Result.Success(athletes.filterNotNull().map { it.toAthlete()})
     }
 }

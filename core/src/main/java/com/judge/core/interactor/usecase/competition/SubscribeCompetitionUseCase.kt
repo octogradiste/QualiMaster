@@ -2,14 +2,12 @@ package com.judge.core.interactor.usecase.competition
 
 import com.judge.core.data.Repository
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.StateFlow
 
 class SubscribeCompetitionUseCase(
-        private val repository: Repository,
-        private val externalScope: CoroutineScope,
+    private val repository: Repository,
 ) {
 
-    suspend operator fun invoke(competitionId: Long) =
+    suspend operator fun invoke(competitionId: Long, externalScope: CoroutineScope) =
         repository.subscribeCompetition(competitionId, externalScope)
 
 }

@@ -6,6 +6,7 @@ import com.judge.core.domain.model.Category
 import com.judge.core.domain.model.Competition
 import com.judge.core.domain.result.Response
 import com.judge.core.domain.result.Result
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 
@@ -13,7 +14,7 @@ class BaseRepositoryImpl(
     private val athleteDao: AthleteDao,
 ) : BaseRepository {
 
-    private val category = Category(0, "c1", 4, 1)
+    private val category = Category(1, "c1", 4, 1)
     private val athletes = listOf(
             Athlete(1, 0, "Adam", "Ondra", 1234, category, 1),
             Athlete(31, 1, "Alex", "Megos", 2345, category, 1),
@@ -21,7 +22,7 @@ class BaseRepositoryImpl(
             Athlete(15, 3, "Sascha", "Lehmann", 4567, category, 1),
     )
     private val competition = Competition(
-            0,
+            1,
             "test",
             "jvm",
             1621490788852L,
@@ -30,6 +31,24 @@ class BaseRepositoryImpl(
             1,
             listOf(category)
     )
+
+    override suspend fun getAllCompetitions(): Result<List<Competition>> {
+        val competitionEntities = athleteDao.getAllCompetitions()
+        val competitions = competitionEntities.map { competitionEntity ->
+            if (competitionEntity == null) {
+                return Result.Error("Null Competition Entity")
+            } else {
+                val categories = athleteDao.getCategories(competitionEntity.competitionId)
+                categories.map { categoryEntity ->
+                    categoryEntity?.toCategory() ?: return Result.Error("Null Category Entity")
+                }
+                competitionEntity.toCompetition(categories.map { categoryEntity ->
+                    categoryEntity?.toCategory() ?: return Result.Error("Null Category Entity")
+                })
+            }
+        }
+        return Result.Success(competitions)
+    }
 
     override suspend fun insertAthletes(athletes: List<Athlete>): Response {
         athleteDao.insertAthletes(athletes.map { it.toEntity() })
@@ -81,7 +100,7 @@ class BaseRepositoryImpl(
                     Result.Success(entity.toCompetition(categories))
                 }
             }
-            .stateIn(externalScope)
+            .stateIn(externalScope.apply { coroutineContext + CoroutineName("Subscribe Competition Base Repository") })
     }
 
     override suspend fun getAthletesByStartOrder(competitionId: Long, order: List<Int>): Result<List<Athlete>> {

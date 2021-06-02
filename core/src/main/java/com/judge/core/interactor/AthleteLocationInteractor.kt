@@ -5,8 +5,8 @@ import com.judge.core.domain.result.Result
 import com.judge.core.interactor.usecase.competition.RefreshCompetitionUseCase
 import com.judge.core.interactor.usecase.athlete.AthleteBoulderBlockUseCase
 import com.judge.core.interactor.usecase.athlete.AthleteTransitBlockUseCase
-import com.judge.core.interactor.usecase.competition.SubscribeCompetitionUseCase
-import com.judge.core.interactor.usecase.rotation.SubscribeCurrentRotationUseCase
+import com.judge.core.interactor.usecase.competition.SubscribeCompetitionUseCaseImpl
+import com.judge.core.interactor.usecase.rotation.SubscribeCurrentRotationUseCaseImpl
 import com.judge.core.interactor.usecase.athlete.AthleteIsolationBlockUseCase
 import com.judge.core.interactor.usecase.athlete.AthleteMovingBlockUseCase
 import com.judge.core.presentation.AthleteListItem
@@ -14,13 +14,13 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 
 class AthleteLocationInteractor(
-        private val athleteBoulderBlock: AthleteBoulderBlockUseCase,
-        private val athleteTransitBlock: AthleteTransitBlockUseCase,
-        private val athleteMovingBlock: AthleteMovingBlockUseCase,
-        private val athleteIsolationBlock: AthleteIsolationBlockUseCase,
-        val subscribeCurrentRotation: SubscribeCurrentRotationUseCase,
-        val subscribeCompetition: SubscribeCompetitionUseCase,
-        val refreshCompetition: RefreshCompetitionUseCase,
+    private val athleteBoulderBlock: AthleteBoulderBlockUseCase,
+    private val athleteTransitBlock: AthleteTransitBlockUseCase,
+    private val athleteMovingBlock: AthleteMovingBlockUseCase,
+    private val athleteIsolationBlock: AthleteIsolationBlockUseCase,
+    val subscribeCurrentRotation: SubscribeCurrentRotationUseCaseImpl,
+    val subscribeCompetition: SubscribeCompetitionUseCaseImpl,
+    val refreshCompetition: RefreshCompetitionUseCase,
 ) {
 
     suspend fun createAthleteLocationBlock(

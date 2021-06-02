@@ -4,12 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="0dp">
 
     <TextView
         android:id="@+id/tvStartTimeLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
         android:text="START"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,6 +33,8 @@
         android:id="@+id/tvCurrentTimeLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         android:text="TIME"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/tvCurrentRotationLabel"
@@ -43,7 +48,7 @@
         android:layout_marginTop="8dp"
         android:text="HH:MM:SS"
         android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tvStartTimeLabel"
         app:layout_constraintTop_toBottomOf="@+id/tvStartTimeLabel" />
 
     <TextView
@@ -64,7 +69,7 @@
         android:text="HH:MM:SS"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/tvCurrentRotation"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/tvCurrentTimeLabel"
         app:layout_constraintTop_toTopOf="@+id/tvCurrentRotation" />
 
 

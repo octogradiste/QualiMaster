@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import com.judge.core.data.Repository
 import com.judge.core.domain.result.Response
 import com.judge.core.domain.result.Result
 import com.judge.core.presentation.state.AthleteListState
@@ -17,20 +18,30 @@ import com.judge.qualimaster.R
 import com.judge.qualimaster.adapter.QualificationRecyclerviewAdapter
 import com.judge.qualimaster.databinding.FragmentCrucialInformationBinding
 import com.judge.qualimaster.ui.viewmodels.CrucialInformationViewModel
+import com.judge.qualimaster.ui.viewmodels.QualificationViewModelFactory
+import com.judge.qualimaster.util.Constants
+import com.judge.qualimaster.util.Constants.COMPETITION_ID_BUNDLE
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CrucialInformationFragment : Fragment(R.layout.fragment_crucial_information) {
 
     private lateinit var binding: FragmentCrucialInformationBinding
-    private val viewModel: CrucialInformationViewModel by viewModels()
+    @Inject lateinit var repository: Repository
 
     private var formatter = SimpleDateFormat("HH:mm:ss")
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentCrucialInformationBinding.bind(view)
+
+        val competitionId = arguments?.getLong(COMPETITION_ID_BUNDLE) ?: -1
+
+        val viewModel: CrucialInformationViewModel by viewModels {
+            QualificationViewModelFactory(repository, competitionId)
+        }
 
         val adapter = QualificationRecyclerviewAdapter(emptyList())
 
@@ -60,24 +71,19 @@ class CrucialInformationFragment : Fragment(R.layout.fragment_crucial_informatio
                             // is Response.Success -> Toast.makeText(context, response.info, Toast.LENGTH_SHORT).show()
                             is Response.Error -> Toast.makeText(context, response.msg, Toast.LENGTH_SHORT).show()
                         }
-//                        Snackbar.make(view, "Changed competition starting time.", Snackbar.LENGTH_SHORT)
-//                                .setAction("Undo") {
-//                                    viewModel.setStartTime(originalStartTime)
-//                                }
-//                                .show()
                     }
                 }
             }
         }
 
-        viewModel.state.observe(viewLifecycleOwner, Observer { state ->
-            when(state) {
-                is AthleteListState.Loading ->  Toast.makeText(context, "Loading", Toast.LENGTH_SHORT).show()
-                is AthleteListState.Active ->  Toast.makeText(context, "Active", Toast.LENGTH_SHORT).show()
-                is AthleteListState.Error -> Toast.makeText(context, state.msg, Toast.LENGTH_LONG).show()
-                else -> Toast.makeText(context, "UNEXPECTED", Toast.LENGTH_SHORT).show()
-            }
-        })
+//        viewModel.state.observe(viewLifecycleOwner, Observer { state ->
+//            when(state) {
+//                is AthleteListState.Loading ->  Toast.makeText(context, "Loading", Toast.LENGTH_SHORT).show()
+//                is AthleteListState.Active ->  Toast.makeText(context, "Active", Toast.LENGTH_SHORT).show()
+//                is AthleteListState.Error -> Toast.makeText(context, state.msg, Toast.LENGTH_LONG).show()
+//                else -> Toast.makeText(context, "UNEXPECTED", Toast.LENGTH_SHORT).show()
+//            }
+//        })
 
         viewModel.crucialInformation.observe(viewLifecycleOwner, Observer { list ->
             adapter.athleteList = list

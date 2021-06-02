@@ -5,16 +5,16 @@ import com.judge.core.domain.model.Competition
 import com.judge.core.domain.result.Result
 import com.judge.core.interactor.usecase.athlete.AthleteBoulderBlockUseCase
 import com.judge.core.interactor.usecase.competition.RefreshCompetitionUseCase
-import com.judge.core.interactor.usecase.competition.SubscribeCompetitionUseCase
+import com.judge.core.interactor.usecase.competition.SubscribeCompetitionUseCaseImpl
 import com.judge.core.presentation.AthleteListItem
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 
 class RotationHistoryInteractor(
-        private val athleteBoulderBlock: AthleteBoulderBlockUseCase,
-        val subscribeCompetition: SubscribeCompetitionUseCase,
-        val refreshCompetition: RefreshCompetitionUseCase,
+    private val athleteBoulderBlock: AthleteBoulderBlockUseCase,
+    val subscribeCompetition: SubscribeCompetitionUseCaseImpl,
+    val refreshCompetition: RefreshCompetitionUseCase,
 ) {
     suspend fun createRotationHistory(comp: Result<Competition>): Result<List<AthleteListItem>> {
         val list = mutableListOf<AthleteListItem>()

@@ -13,6 +13,8 @@ class Repository(
 
     suspend fun sync() = baseRepository.sync()
 
+    suspend fun getAllCompetitions() = baseRepository.getAllCompetitions()
+
     suspend fun refreshCompetition(competitionId: Long) =
             baseRepository.refreshCompetition(competitionId)
 

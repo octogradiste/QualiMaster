@@ -7,20 +7,20 @@ import com.judge.core.interactor.usecase.athlete.AthleteBoulderBlockUseCase
 import com.judge.core.interactor.usecase.athlete.AthleteTransitBlockUseCase
 import com.judge.core.interactor.usecase.competition.RefreshCompetitionUseCase
 import com.judge.core.interactor.usecase.competition.SetStartTimeUseCase
-import com.judge.core.interactor.usecase.competition.SubscribeCompetitionUseCase
-import com.judge.core.interactor.usecase.rotation.SubscribeCurrentRotationUseCase
+import com.judge.core.interactor.usecase.competition.SubscribeCompetitionUseCaseImpl
+import com.judge.core.interactor.usecase.rotation.SubscribeCurrentRotationUseCaseImpl
 import com.judge.core.presentation.AthleteListItem
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 
 class CrucialInformationInteractor(
-        private val athleteBoulderBlock: AthleteBoulderBlockUseCase,
-        private val athleteTransitBlock: AthleteTransitBlockUseCase,
-        val setStartTime: SetStartTimeUseCase,
-        val subscribeCurrentTime: SubscribeCurrentTimeUseCase,
-        val subscribeCurrentRotation: SubscribeCurrentRotationUseCase,
-        val subscribeCompetition: SubscribeCompetitionUseCase,
-        val refreshCompetition: RefreshCompetitionUseCase,
+    private val athleteBoulderBlock: AthleteBoulderBlockUseCase,
+    private val athleteTransitBlock: AthleteTransitBlockUseCase,
+    val setStartTime: SetStartTimeUseCase,
+    val subscribeCurrentTime: SubscribeCurrentTimeUseCase,
+    val subscribeCurrentRotation: SubscribeCurrentRotationUseCaseImpl,
+    val subscribeCompetition: SubscribeCompetitionUseCaseImpl,
+    val refreshCompetition: RefreshCompetitionUseCase,
 ) {
 
     suspend fun createCrucialInformation(

@@ -12,6 +12,9 @@ import kotlinx.coroutines.flow.StateFlow
 @Dao
 interface AthleteDao {
 
+    @Query("SELECT * FROM competitions")
+    suspend fun getAllCompetitions(): List<CompetitionEntity?>
+
     @Insert
     suspend fun insertAthletes(athletes: List<AthleteEntity>)
 

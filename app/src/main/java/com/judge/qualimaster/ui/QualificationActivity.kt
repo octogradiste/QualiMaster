@@ -1,20 +1,10 @@
 package com.judge.qualimaster.ui
 
-import android.content.ContentResolver
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
-import android.provider.DocumentsContract
-import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
 import android.view.WindowManager
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
+import androidx.navigation.NavArgument
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.judge.core.data.Repository
@@ -24,10 +14,8 @@ import com.judge.qualimaster.data.AppDatabase
 import com.judge.qualimaster.data.AthleteDao
 import com.judge.qualimaster.data.BaseRepositoryImpl
 import com.judge.qualimaster.databinding.ActivityQualificationBinding
+import com.judge.qualimaster.util.Constants.COMPETITION_ID_BUNDLE
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import java.io.File
-import java.io.FileInputStream
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -38,19 +26,9 @@ class QualificationActivity : AppCompatActivity() {
     @Inject lateinit var db: AppDatabase
     @Inject lateinit var repository: Repository
 
-    private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        if (uri != null) {
-            lifecycleScope.launchWhenStarted {
-                showProgressBar(true)
-                db.clearAllTables()
-                loadData(uri)
-                showProgressBar(false)
-            }
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = ActivityQualificationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -58,54 +36,25 @@ class QualificationActivity : AppCompatActivity() {
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
+        val competitionId = intent.extras?.getLong(COMPETITION_ID_BUNDLE)
+        val argument = NavArgument.Builder().setDefaultValue(competitionId).build()
+        val navController = findNavController(R.id.flQualification)
+        val navInflater = navController.navInflater
+        val graph = navInflater.inflate(R.navigation.nav_graph)
+        graph.addArgument(COMPETITION_ID_BUNDLE, argument)
+        navController.graph = graph
+
         NavigationUI.setupWithNavController(
                 binding.bnvQualificationBottomNavigation,
-                findNavController(R.id.flQualification)
+                navController
         )
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.qualification_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId) {
-            R.id.miOpenFile -> {
-                getContent.launch("text/*")
-                true
-            }
-            R.id.miRefresh -> {
-                lifecycleScope.launchWhenStarted {
-                    showProgressBar(true)
-//                    delay(1000)
-                    repository.sync() // TODO: change to refresh only comp
-                    showProgressBar(false)
-                }
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private suspend fun loadData(uri: Uri) {
-        val inputStream = contentResolver.openInputStream(uri)
-
-        if (inputStream != null) {
-//            val reader = CSVReader(inputStream)
-//            val athletes = reader.getAthletes()
-//            athleteDao.insertAthletes(athletes)
-            Toast.makeText(this, "Successfully loaded CSV", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(this, "Problem while loading file in ${uri.path}", Toast.LENGTH_SHORT).show()
-        }
-    }
-    
-    private fun showProgressBar(show: Boolean) {
-        if (show) {
-            binding.pbLoading.visibility = View.VISIBLE
-        } else {
-            binding.pbLoading.visibility = View.GONE
+        binding.bnvQualificationBottomNavigation.setOnNavigationItemSelectedListener { item ->
+            val fragmentId = item.itemId
+            val arguments = bundleOf(Pair(COMPETITION_ID_BUNDLE, competitionId))
+            navController.popBackStack()
+            navController.navigate(fragmentId, arguments)
+            return@setOnNavigationItemSelectedListener true
         }
     }
 }

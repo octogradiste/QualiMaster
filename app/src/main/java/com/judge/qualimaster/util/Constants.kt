@@ -7,4 +7,6 @@ object Constants {
     const val MINUTE_PER_BOULDER = 5
     const val PEOPLE_IN_BUFFER = 1
 
+    const val COMPETITION_ID_BUNDLE = "competition_id_bundle"
+
 }

@@ -1,6 +1,7 @@
 package com.judge.core.util.tick
 
 import com.judge.core.util.Clock
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +17,7 @@ class TickHandlerImpl (
     private val _tick = MutableStateFlow(0L)
 
     override fun subscribe(externalScope: CoroutineScope): StateFlow<Long> {
-        externalScope.launch {
+        externalScope.launch(CoroutineName("Tick Handler Coroutine")) {
             while(true) {
                 _tick.emit(clock.currentTimeMs())
                 delay(tickIntervalMs)

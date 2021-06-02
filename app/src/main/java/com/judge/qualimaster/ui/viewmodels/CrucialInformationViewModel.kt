@@ -11,21 +11,24 @@ import com.judge.core.interactor.usecase.athlete.AthleteBoulderBlockUseCase
 import com.judge.core.interactor.usecase.athlete.AthleteTransitBlockUseCase
 import com.judge.core.interactor.usecase.competition.RefreshCompetitionUseCase
 import com.judge.core.interactor.usecase.competition.SetStartTimeUseCase
-import com.judge.core.interactor.usecase.competition.SubscribeCompetitionUseCase
+import com.judge.core.interactor.usecase.competition.SubscribeCompetitionUseCaseImpl
 import com.judge.core.interactor.usecase.rotation.GetRotationUseCase
-import com.judge.core.interactor.usecase.rotation.SubscribeCurrentRotationUseCase
+import com.judge.core.interactor.usecase.rotation.SubscribeCurrentRotationUseCaseImpl
 import com.judge.core.presentation.presenter.CrucialInformationPresenter
 import com.judge.core.util.tick.TickHandler
 import com.judge.core.util.tick.TickHandlerImpl
 import com.judge.qualimaster.util.ClockImpl
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
-@HiltViewModel
-class CrucialInformationViewModel @Inject constructor(repository: Repository) : ViewModel() {
+class CrucialInformationViewModel constructor(
+    repository: Repository, competitionId: Long
+) : ViewModel() {
 
-    private val competitionId = 1L
+    // private val competitionId = 1L
     private val tickHandler: TickHandler = TickHandlerImpl(ClockImpl())
     private val athleteBlock = AthleteBlockUseCase()
 
@@ -34,12 +37,12 @@ class CrucialInformationViewModel @Inject constructor(repository: Repository) : 
             AthleteTransitBlockUseCase(repository, athleteBlock),
             SetStartTimeUseCase(repository),
             SubscribeCurrentTimeUseCase(tickHandler),
-            SubscribeCurrentRotationUseCase(
-                SubscribeCompetitionUseCase(repository),
+            SubscribeCurrentRotationUseCaseImpl(
+                SubscribeCompetitionUseCaseImpl(repository),
                 SubscribeCurrentTimeUseCase(tickHandler),
                 GetRotationUseCase(),
             ),
-            SubscribeCompetitionUseCase(repository),
+            SubscribeCompetitionUseCaseImpl(repository),
             RefreshCompetitionUseCase(repository),
        )
 

@@ -8,20 +8,18 @@ import com.judge.core.interactor.AthleteLocationInteractor
 import com.judge.core.interactor.usecase.*
 import com.judge.core.interactor.usecase.athlete.*
 import com.judge.core.interactor.usecase.competition.RefreshCompetitionUseCase
-import com.judge.core.interactor.usecase.competition.SubscribeCompetitionUseCase
+import com.judge.core.interactor.usecase.competition.SubscribeCompetitionUseCaseImpl
 import com.judge.core.interactor.usecase.rotation.GetRotationUseCase
-import com.judge.core.interactor.usecase.rotation.SubscribeCurrentRotationUseCase
+import com.judge.core.interactor.usecase.rotation.SubscribeCurrentRotationUseCaseImpl
 import com.judge.core.presentation.presenter.AthleteLocationPresenter
-import com.judge.core.util.tick.TickHandler
 import com.judge.core.util.tick.TickHandlerImpl
 import com.judge.qualimaster.util.ClockImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
-@HiltViewModel
-class AthleteLocationViewModel @Inject constructor(repository: Repository): ViewModel() {
-    private val competitionId = 1L
+class AthleteLocationViewModel(repository: Repository, competitionId: Long): ViewModel() {
+    //private val competitionId = 1L
     private val athleteBlock = AthleteBlockUseCase()
 
     private val interactor = AthleteLocationInteractor(
@@ -29,12 +27,12 @@ class AthleteLocationViewModel @Inject constructor(repository: Repository): View
             AthleteTransitBlockUseCase(repository, athleteBlock),
             AthleteMovingBlockUseCase(repository, athleteBlock),
             AthleteIsolationBlockUseCase(repository, athleteBlock),
-            SubscribeCurrentRotationUseCase(
-                SubscribeCompetitionUseCase(repository),
+            SubscribeCurrentRotationUseCaseImpl(
+                SubscribeCompetitionUseCaseImpl(repository),
                 SubscribeCurrentTimeUseCase(TickHandlerImpl(ClockImpl())),
                 GetRotationUseCase(),
             ),
-            SubscribeCompetitionUseCase(repository),
+            SubscribeCompetitionUseCaseImpl(repository),
             RefreshCompetitionUseCase(repository),
     )
 

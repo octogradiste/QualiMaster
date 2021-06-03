@@ -23,8 +23,10 @@ class CompetitionsRecyclerviewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val tvCompetitionTitle = holder.itemView.findViewById<TextView>(R.id.tvCompetitionTitle)
+        val tvLocationName = holder.itemView.findViewById<TextView>(R.id.tvLocationName)
         tvCompetitionTitle.text = competitions[position].name
-        tvCompetitionTitle.setOnClickListener {
+        tvLocationName.text = competitions[position].location
+        holder.itemView.setOnClickListener {
             listener(competitions[position].competitionId)
         }
     }

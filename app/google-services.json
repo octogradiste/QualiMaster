@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "346166628692",
+    "project_id": "quali-master",
+    "storage_bucket": "quali-master.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:346166628692:android:b02ef29f1c1521946178c1",
+        "android_client_info": {
+          "package_name": "com.judge.qualimaster"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "346166628692-t6sucdlvjcruubgsnnp3mlodetq1s4a9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIq5EsGMmsYTdk5qjEikuFLi_AHPH36uo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "346166628692-t6sucdlvjcruubgsnnp3mlodetq1s4a9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -2,7 +2,6 @@ package com.judge.qualimaster.ui
 
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -10,13 +9,14 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.judge.core.data.Repository
-import com.judge.core.domain.model.Competition
 import com.judge.core.domain.result.Result
 import com.judge.qualimaster.R
 import com.judge.qualimaster.adapter.CompetitionsRecyclerviewAdapter
+import com.judge.qualimaster.data.FirestoreBaseRepository
 import com.judge.qualimaster.databinding.ActivityHomeBinding
 import com.judge.qualimaster.ui.viewmodels.HomeViewModel
 import com.judge.qualimaster.util.Constants.COMPETITION_ID_BUNDLE
@@ -38,20 +38,35 @@ class HomeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val viewModel: HomeViewModel by viewModels()
-        val comps = runBlocking{ viewModel.getAllCompetitions() } as Result.Success // TODO remove runBlocking!!
+        //val comps = runBlocking{ viewModel.getAllCompetitions() } as Result.Success // TODO remove runBlocking!!
+        val repo = FirestoreBaseRepository()
 
-        val adapter = CompetitionsRecyclerviewAdapter(comps.value) { competitionId ->
-            val bundle = Bundle()
-            bundle.putLong(COMPETITION_ID_BUNDLE, competitionId)
-            val intent = Intent(this, QualificationActivity::class.java)
-            intent.putExtras(bundle)
-            startActivity(intent)
+        lifecycleScope.launchWhenCreated {
+            showProgressBar(true)
+
+            when (val comps = repo.getAllCompetitions()) {
+                is Result.Error -> Toast.makeText(this@HomeActivity, comps.msg, Toast.LENGTH_LONG)
+                    .show()
+                is Result.Success -> {
+                    val adapter = CompetitionsRecyclerviewAdapter(comps.value) { competitionId ->
+                        val bundle = Bundle()
+                        bundle.putLong(COMPETITION_ID_BUNDLE, competitionId)
+                        val intent = Intent(this@HomeActivity, QualificationActivity::class.java)
+                        intent.putExtras(bundle)
+                        startActivity(intent)
+                    }
+
+                    binding.rvCompetitions.let {
+                        it.adapter = adapter
+                        it.layoutManager = LinearLayoutManager(this@HomeActivity)
+                    }
+                }
+            }
+
+            showProgressBar(false)
         }
 
-        binding.rvCompetitions.let {
-            it.adapter = adapter
-            it.layoutManager = LinearLayoutManager(this)
-        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

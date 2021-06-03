@@ -26,7 +26,7 @@ class AthleteLocationFragment : Fragment(R.layout.fragment_athlete_location) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentAthleteLocationBinding.bind(view)
 
-        val competitionId = arguments?.getLong(Constants.COMPETITION_ID_BUNDLE) ?: -1
+        val competitionId = arguments?.getString(Constants.COMPETITION_ID_BUNDLE) ?: "" // TODO : some kind of error state
         val viewModel: AthleteLocationViewModel by viewModels {
             QualificationViewModelFactory(repository, competitionId)
         }

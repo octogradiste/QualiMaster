@@ -1,7 +1,7 @@
 package com.judge.core.domain.model
 
 data class Competition(
-        val competitionId: Long,
+        val competitionId: String,
         val name: String,
         val location: String,
         val startTime: Long,

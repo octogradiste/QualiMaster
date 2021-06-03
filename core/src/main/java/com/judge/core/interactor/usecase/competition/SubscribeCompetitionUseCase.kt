@@ -6,5 +6,5 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 
 interface SubscribeCompetitionUseCase {
-    suspend operator fun invoke(competitionId: Long, externalScope: CoroutineScope): StateFlow<Result<Competition>>
+    suspend operator fun invoke(competitionId: String, externalScope: CoroutineScope): StateFlow<Result<Competition>>
 }

@@ -28,12 +28,12 @@ interface AthleteDao {
     suspend fun updateCompetition(comp: CompetitionEntity)
 
     @Query("SELECT * FROM competitions WHERE competitionId == :competitionId")
-    fun subscribeCompetition(competitionId: Long): Flow<CompetitionEntity?>
+    fun subscribeCompetition(competitionId: String): Flow<CompetitionEntity?>
 
     @Query("SELECT * FROM categories WHERE competitionId == :competitionId")
-    suspend fun getCategories(competitionId: Long): List<CategoryEntity?>
+    suspend fun getCategories(competitionId: String): List<CategoryEntity?>
 
     @Query("SELECT * FROM athletes WHERE competitionId == :competitionId AND startOrder in (:order)")
-    suspend fun getAthletesByStartOrder(competitionId: Long, order: List<Int>): List<AthleteEntity?>
+    suspend fun getAthletesByStartOrder(competitionId: String, order: List<Int>): List<AthleteEntity?>
 
 }

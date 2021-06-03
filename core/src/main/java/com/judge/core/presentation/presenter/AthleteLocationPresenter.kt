@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class AthleteLocationPresenter(
-        private val competitionId: Long,
+        private val competitionId: String,
         private val interactor: AthleteLocationInteractor,
         private val ioDispatcher: CoroutineDispatcher,
         externalScope: CoroutineScope,

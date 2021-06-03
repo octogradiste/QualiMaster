@@ -15,13 +15,13 @@ class Repository(
 
     suspend fun getAllCompetitions() = baseRepository.getAllCompetitions()
 
-    suspend fun refreshCompetition(competitionId: Long) =
+    suspend fun refreshCompetition(competitionId: String) =
             baseRepository.refreshCompetition(competitionId)
 
     suspend fun setStartTime(competition: Competition, time: Long) =
             baseRepository.setStartTime(competition, time)
 
-    suspend fun subscribeCompetition(competitionId: Long, externalScope: CoroutineScope) =
+    suspend fun subscribeCompetition(competitionId: String, externalScope: CoroutineScope) =
             baseRepository.subscribeCompetition(competitionId, externalScope)
 
     suspend fun getAthletesInIsolation(

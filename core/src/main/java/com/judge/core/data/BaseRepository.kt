@@ -25,14 +25,14 @@ interface BaseRepository {
 
     suspend fun insertCompetitions(competitions: List<Competition>): Response
 
-    suspend fun refreshCompetition(competitionId: Long): Response
+    suspend fun refreshCompetition(competitionId: String): Response
 
     suspend fun setStartTime(competition: Competition, time: Long): Response
 
-    suspend fun subscribeCompetition(competitionId: Long, externalScope: CoroutineScope): StateFlow<Result<Competition>>
+    suspend fun subscribeCompetition(competitionId: String, externalScope: CoroutineScope): StateFlow<Result<Competition>>
 
     suspend fun getAthletesByStartOrder(
-            competitionId: Long,
+            competitionId: String,
             order: List<Int>,
     ): Result<List<Athlete>>
 

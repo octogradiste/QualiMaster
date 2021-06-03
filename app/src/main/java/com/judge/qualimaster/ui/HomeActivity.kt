@@ -50,7 +50,7 @@ class HomeActivity : AppCompatActivity() {
                 is Result.Success -> {
                     val adapter = CompetitionsRecyclerviewAdapter(comps.value) { competitionId ->
                         val bundle = Bundle()
-                        bundle.putLong(COMPETITION_ID_BUNDLE, competitionId)
+                        bundle.putString(COMPETITION_ID_BUNDLE, competitionId)
                         val intent = Intent(this@HomeActivity, QualificationActivity::class.java)
                         intent.putExtras(bundle)
                         startActivity(intent)

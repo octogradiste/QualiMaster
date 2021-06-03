@@ -37,7 +37,7 @@ class CrucialInformationFragment : Fragment(R.layout.fragment_crucial_informatio
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentCrucialInformationBinding.bind(view)
 
-        val competitionId = arguments?.getLong(COMPETITION_ID_BUNDLE) ?: -1
+        val competitionId = arguments?.getString(COMPETITION_ID_BUNDLE) ?: "" // TODO : some kind of error state
 
         val viewModel: CrucialInformationViewModel by viewModels {
             QualificationViewModelFactory(repository, competitionId)

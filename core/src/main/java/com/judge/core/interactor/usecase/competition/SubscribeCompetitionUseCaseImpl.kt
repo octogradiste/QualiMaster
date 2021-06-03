@@ -7,7 +7,7 @@ class SubscribeCompetitionUseCaseImpl(
     private val repository: Repository,
 ) : SubscribeCompetitionUseCase {
 
-    override suspend operator fun invoke(competitionId: Long, externalScope: CoroutineScope) =
+    override suspend operator fun invoke(competitionId: String, externalScope: CoroutineScope) =
         repository.subscribeCompetition(competitionId, externalScope)
 
 }

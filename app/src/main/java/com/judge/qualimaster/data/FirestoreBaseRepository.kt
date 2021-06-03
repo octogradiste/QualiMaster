@@ -13,6 +13,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class FirestoreBaseRepository() : BaseRepository {
 
@@ -38,22 +40,7 @@ class FirestoreBaseRepository() : BaseRepository {
         db.collection(COMPETITION_COLLECTION)
             .get()
             .addOnSuccessListener { result ->
-                val comps = result.map { document ->
-                    val competitionId = 1L // document.id
-                    val name = document.data[COMP_NAME] as String
-                    val location = document.data[COMP_LOCATION] as String
-                    val startTime = 1622698602644L // document.data[COMP_START_TIME] as String
-                    val minPerBoulder = (document.data[COMP_MIN_PER_BOULDER] as Long)
-                    val numOfAthletesClimbing = (document.data[COMP_NUM_OF_ATHLETES_CLIMBING] as Long)
-                    val numOfAthletesInBuffer = (document.data[COMP_NUM_OF_ATHLETES_IN_BUFFER] as Long)
-                    val categories = (document.data[COMP_CATEGORIES] as List<*>).mapIndexed { index, any ->
-                        Category(index.toLong(), any as String, 1, competitionId)
-                    }
-                    Competition(
-                        competitionId, name, location, startTime, minPerBoulder.toInt(),
-                        numOfAthletesClimbing.toInt(), numOfAthletesInBuffer.toInt(), categories
-                    )
-                }
+                val comps = result.map { document -> dataToCompetition(document.id, document.data)}
                 competitionsDeferred.complete(Result.Success(comps))
             }
             .addOnFailureListener {
@@ -75,7 +62,7 @@ class FirestoreBaseRepository() : BaseRepository {
         return Response.Error("Not yet implemented")
     }
 
-    override suspend fun refreshCompetition(competitionId: Long): Response {
+    override suspend fun refreshCompetition(competitionId: String): Response {
         return Response.Error("Not yet implemented")
     }
 
@@ -84,16 +71,47 @@ class FirestoreBaseRepository() : BaseRepository {
     }
 
     override suspend fun subscribeCompetition(
-        competitionId: Long,
+        competitionId: String,
         externalScope: CoroutineScope
     ): StateFlow<Result<Competition>> {
-        return MutableStateFlow(Result.Error("Not yet implemented")).asStateFlow()
+        val competition = MutableStateFlow<Result<Competition>>(Result.Error("Not loaded yet"))
+        return suspendCoroutine { continuation ->
+            val ref = db.collection(COMPETITION_COLLECTION).document(competitionId)
+            ref.addSnapshotListener { value, error ->
+                if (error != null) {
+                    competition.value = Result.Error(error.message ?: "Listen failed.")
+                } else {
+                    if (value != null && value.exists() && value.data != null) {
+                        competition.value = Result.Success(dataToCompetition(value.id, value.data!!))
+                    } else {
+                        Result.Error("Value is null.")
+                    }
+                }
+                continuation.resume(competition.asStateFlow())
+            }
+        }
     }
 
     override suspend fun getAthletesByStartOrder(
-        competitionId: Long,
+        competitionId: String,
         order: List<Int>
     ): Result<List<Athlete>> {
         return Result.Error("Not yet implemented")
+    }
+
+    private fun dataToCompetition(competitionId: String, data: Map<String, Any>): Competition {
+        val name = data[COMP_NAME] as String
+        val location = data[COMP_LOCATION] as String
+        val startTime = 1622698602644L // TODO : document.data[COMP_START_TIME] as String
+        val minPerBoulder = (data[COMP_MIN_PER_BOULDER] as Long)
+        val numOfAthletesClimbing = (data[COMP_NUM_OF_ATHLETES_CLIMBING] as Long)
+        val numOfAthletesInBuffer = (data[COMP_NUM_OF_ATHLETES_IN_BUFFER] as Long)
+        val categories = (data[COMP_CATEGORIES] as List<*>).mapIndexed { index, any ->
+            Category(index, any as String, 1, competitionId)
+        }
+        return Competition(
+            competitionId, name, location, startTime, minPerBoulder.toInt(),
+            numOfAthletesClimbing.toInt(), numOfAthletesInBuffer.toInt(), categories
+        )
     }
 }

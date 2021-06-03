@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class RotationHistoryPresenter(
-        private val competitionId: Long,
+        private val competitionId: String,
         private val interactor: RotationHistoryInteractor,
         private val ioDispatcher: CoroutineDispatcher,
         externalScope: CoroutineScope,

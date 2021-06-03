@@ -36,7 +36,7 @@ class QualificationActivity : AppCompatActivity() {
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-        val competitionId = intent.extras?.getLong(COMPETITION_ID_BUNDLE)
+        val competitionId = intent.extras?.getString(COMPETITION_ID_BUNDLE)
         val argument = NavArgument.Builder().setDefaultValue(competitionId).build()
         val navController = findNavController(R.id.flQualification)
         val navInflater = navController.navInflater

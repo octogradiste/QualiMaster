@@ -18,7 +18,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
-class AthleteLocationViewModel(repository: Repository, competitionId: Long): ViewModel() {
+class AthleteLocationViewModel(repository: Repository, competitionId: String): ViewModel() {
     //private val competitionId = 1L
     private val athleteBlock = AthleteBlockUseCase()
 

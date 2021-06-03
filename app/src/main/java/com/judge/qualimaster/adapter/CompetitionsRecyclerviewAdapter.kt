@@ -10,7 +10,7 @@ import com.judge.qualimaster.R
 
 class CompetitionsRecyclerviewAdapter(
     var competitions: List<Competition>,
-    private val listener: (competitionId: Long) -> Unit
+    private val listener: (competitionId: String) -> Unit
 ) : RecyclerView.Adapter<CompetitionsRecyclerviewAdapter.ViewHolder>() {
 
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view)

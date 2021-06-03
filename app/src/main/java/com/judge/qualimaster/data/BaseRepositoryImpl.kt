@@ -14,23 +14,24 @@ class BaseRepositoryImpl(
     private val athleteDao: AthleteDao,
 ) : BaseRepository {
 
-    private val category = Category(1, "c1", 4, 1)
-    private val athletes = listOf(
-            Athlete(1, 0, "Adam", "Ondra", 1234, category, 1),
-            Athlete(31, 1, "Alex", "Megos", 2345, category, 1),
-            Athlete(12, 2, "Magnus", "Mitboe", 3456, category, 1),
-            Athlete(15, 3, "Sascha", "Lehmann", 4567, category, 1),
-    )
-    private val competition = Competition(
-            1,
-            "test",
-            "jvm",
-            1621490788852L,
-            5,
-            5,
-            1,
-            listOf(category)
-    )
+//    private val competitionId = 1
+//    private val category = Category(1, "c1", 4, 1)
+//    private val athletes = listOf(
+//            Athlete(1, 0, "Adam", "Ondra", 1234, category, 1),
+//            Athlete(31, 1, "Alex", "Megos", 2345, category, 1),
+//            Athlete(12, 2, "Magnus", "Mitboe", 3456, category, 1),
+//            Athlete(15, 3, "Sascha", "Lehmann", 4567, category, 1),
+//    )
+//    private val competition = Competition(
+//            1,
+//            "test",
+//            "jvm",
+//            1621490788852L,
+//            5,
+//            5,
+//            1,
+//            listOf(category)
+//    )
 
     override suspend fun getAllCompetitions(): Result<List<Competition>> {
         val competitionEntities = athleteDao.getAllCompetitions()
@@ -66,13 +67,13 @@ class BaseRepositoryImpl(
     }
 
     override suspend fun sync(): Response {
-        insertAthletes(athletes)
-        insertCategories(listOf(category))
-        insertCompetitions(listOf(competition))
+        //insertAthletes(athletes)
+        //insertCategories(listOf(category))
+        //insertCompetitions(listOf(competition))
         return Response.Success("Successfully synced data.")
     }
 
-    override suspend fun refreshCompetition(competitionId: Long): Response {
+    override suspend fun refreshCompetition(competitionId: String): Response {
         return Response.Success("Successfully refreshed competition.")
     }
 
@@ -82,20 +83,20 @@ class BaseRepositoryImpl(
     }
 
     override suspend fun subscribeCompetition(
-        competitionId: Long,
+        competitionId: String,
         externalScope: CoroutineScope
     ): StateFlow<Result<Competition>> {
         val subscription = athleteDao.subscribeCompetition(competitionId)
         return subscription
             .map { entity ->
                 if (entity == null) {
-                    Result.Error("The competition $competitionId is not available.}")
+                    Result.Error("No id $competitionId")
                 } else {
                     val categories = athleteDao.getCategories(competitionId)
                         .filterNotNull()
                         .map { it.toCategory() }
                     if (categories.isEmpty()) {
-                        Result.Error("The competition $competitionId has no categories.")
+                        Result.Error("No category for competition $competitionId")
                     }
                     Result.Success(entity.toCompetition(categories))
                 }
@@ -103,7 +104,7 @@ class BaseRepositoryImpl(
             .stateIn(externalScope.apply { coroutineContext + CoroutineName("Subscribe Competition Base Repository") })
     }
 
-    override suspend fun getAthletesByStartOrder(competitionId: Long, order: List<Int>): Result<List<Athlete>> {
+    override suspend fun getAthletesByStartOrder(competitionId: String, order: List<Int>): Result<List<Athlete>> {
         val athletes = athleteDao.getAthletesByStartOrder(competitionId, order)
         return Result.Success(athletes.filterNotNull().map { it.toAthlete()})
     }

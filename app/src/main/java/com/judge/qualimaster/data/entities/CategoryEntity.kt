@@ -4,10 +4,13 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "categories")
+@Entity(
+    tableName = "categories",
+    primaryKeys = ["competitionId", "categoryId"],
+)
 data class CategoryEntity(
     val name: String,
     val numOfAthletes: Int,
-    val competitionId: Long,
-    @PrimaryKey(autoGenerate = true) val categoryId: Long = 0L
+    val competitionId: String,
+    val categoryId: Int,
 )

@@ -25,7 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
 class CrucialInformationViewModel constructor(
-    repository: Repository, competitionId: Long
+    repository: Repository, competitionId: String
 ) : ViewModel() {
 
     // private val competitionId = 1L

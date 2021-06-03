@@ -14,7 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
-class RotationHistoryViewModel(repository: Repository, competitionId: Long) : ViewModel() {
+class RotationHistoryViewModel(repository: Repository, competitionId: String) : ViewModel() {
     // private val competitionId = 1L
 
     private val interactor = RotationHistoryInteractor(

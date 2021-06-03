@@ -19,7 +19,7 @@ class SubscribeCurrentRotationUseCaseImpl(
 
     private val currentRotation = MutableStateFlow<Result<Int>>(Result.Success(0))
 
-    override suspend operator fun invoke(competitionId: Long, externalScope: CoroutineScope): StateFlow<Result<Int>> {
+    override suspend operator fun invoke(competitionId: String, externalScope: CoroutineScope): StateFlow<Result<Int>> {
         val competition = subscribeCompetition(competitionId, externalScope)
         val time = currentTime(externalScope)
 

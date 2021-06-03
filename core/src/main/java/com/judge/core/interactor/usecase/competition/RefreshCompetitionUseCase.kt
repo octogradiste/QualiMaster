@@ -10,6 +10,6 @@ class RefreshCompetitionUseCase(
         private val repository: Repository
 ) {
 
-    suspend operator fun invoke(competitionId: Long) = repository.refreshCompetition(competitionId)
+    suspend operator fun invoke(competitionId: String) = repository.refreshCompetition(competitionId)
 
 }

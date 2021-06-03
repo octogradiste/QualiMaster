@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class CrucialInformationPresenter (
-        private val competitionId: Long,
+        private val competitionId: String,
         private val interactor: CrucialInformationInteractor,
         private val ioDispatcher: CoroutineDispatcher,
         externalScope: CoroutineScope,

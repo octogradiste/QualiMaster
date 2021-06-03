@@ -25,7 +25,7 @@ class RotationHistoryFragment : Fragment(R.layout.fragment_rotation_history) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentRotationHistoryBinding.bind(view)
 
-        val competitionId = arguments?.getLong(Constants.COMPETITION_ID_BUNDLE) ?: -1
+        val competitionId = arguments?.getString(Constants.COMPETITION_ID_BUNDLE) ?: "" // TODO : some kind of error state
         val viewModel: RotationHistoryViewModel by viewModels {
             QualificationViewModelFactory(repository, competitionId)
         }

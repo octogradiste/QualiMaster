@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.judge.core.data.Repository
 import java.lang.IllegalArgumentException
 
-class QualificationViewModelFactory(private val repository: Repository, private val competitionId: Long) : ViewModelProvider.Factory {
+class QualificationViewModelFactory(private val repository: Repository, private val competitionId: String) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(CrucialInformationViewModel::class.java)) {

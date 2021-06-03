@@ -11,5 +11,5 @@ data class CompetitionEntity(
     val minPerBoulder: Int,
     val numOfAthletesClimbing: Int,
     val numOfAthletesInBuffer: Int,
-    @PrimaryKey(autoGenerate = true) val competitionId: Long = 0L
+    @PrimaryKey val competitionId: String,
 )

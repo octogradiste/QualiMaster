@@ -8,7 +8,7 @@ import com.judge.core.domain.model.Category
     primaryKeys = ["competitionId", "number"],
 )
 data class AthleteEntity(
-    val competitionId: Long,
+    val competitionId: String,
     val number: Int,
     val startOrder: Int,
     val firstName: String,

@@ -35,7 +35,7 @@ class CrucialInformationPresenter (
 
     init {
         externalScope.launch {
-            // refresh()
+            refresh()
             comp = interactor.subscribeCompetition(competitionId, externalScope)
 
             launch {

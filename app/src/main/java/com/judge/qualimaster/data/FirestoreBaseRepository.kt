@@ -1,5 +1,5 @@
 package com.judge.qualimaster.data
-
+/*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.judge.core.data.BaseRepository
@@ -107,7 +107,7 @@ class FirestoreBaseRepository() : BaseRepository {
         val numOfAthletesClimbing = (data[COMP_NUM_OF_ATHLETES_CLIMBING] as Long)
         val numOfAthletesInBuffer = (data[COMP_NUM_OF_ATHLETES_IN_BUFFER] as Long)
         val categories = (data[COMP_CATEGORIES] as List<*>).mapIndexed { index, any ->
-            Category(index, any as String, 1, competitionId)
+            Category(any as String, 1, competitionId)
         }
         return Competition(
             competitionId, name, location, startTime, minPerBoulder.toInt(),
@@ -115,3 +115,4 @@ class FirestoreBaseRepository() : BaseRepository {
         )
     }
 }
+*/

@@ -17,7 +17,7 @@ class RepositoryTest {
 
     private val competitionId = 0L
     private val category = Category(0, "Category", 20, competitionId)
-    private val athlete = Athlete(13, 0, "Test", "Dude", 1234, category, competitionId)
+    private val athlete = Athlete(competitionId, 13, 0, "Test", "Dude", 1234, category)
 //    private val athletes = mutableListOf(
 //        Athlete(1, 0, "Adam", "Ondra", 1234, category, competitionId),
 //        Athlete(31, 1, "Alex", "Megos", 2345, category, competitionId),

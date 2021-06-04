@@ -15,13 +15,13 @@ interface AthleteDao {
     @Query("SELECT * FROM competitions")
     suspend fun getAllCompetitions(): List<CompetitionEntity?>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAthletes(athletes: List<AthleteEntity>)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCategories(categories: List<CategoryEntity>)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCompetitions(competitions: List<CompetitionEntity>)
 
     @Update

@@ -32,7 +32,7 @@ class AthleteLocationPresenter(
 
     init {
         externalScope.launch {
-            // refresh()
+            refresh()
             comp = interactor.subscribeCompetition(competitionId, externalScope)
             currentRotation = interactor.subscribeCurrentRotation(competitionId, externalScope)
             currentRotation.collect { rotation ->

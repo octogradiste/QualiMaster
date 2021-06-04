@@ -6,11 +6,10 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "categories",
-    primaryKeys = ["competitionId", "categoryId"],
+    primaryKeys = ["competitionId", "name"],
 )
 data class CategoryEntity(
     val name: String,
     val numOfAthletes: Int,
     val competitionId: String,
-    val categoryId: Int,
 )

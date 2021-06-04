@@ -8,10 +8,10 @@
         android:title="Refresh"
         app:showAsAction="always" />
 
-    <item
-        android:id="@+id/miOpenFile"
-        android:icon="@drawable/ic_open_file"
-        android:title="Open File"
-        app:showAsAction="ifRoom" />
+<!--    <item-->
+<!--        android:id="@+id/miOpenFile"-->
+<!--        android:icon="@drawable/ic_open_file"-->
+<!--        android:title="Open File"-->
+<!--        app:showAsAction="ifRoom" />-->
 
 </menu>

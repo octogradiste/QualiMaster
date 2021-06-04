@@ -16,7 +16,7 @@ import com.judge.core.data.Repository
 import com.judge.core.domain.result.Result
 import com.judge.qualimaster.R
 import com.judge.qualimaster.adapter.CompetitionsRecyclerviewAdapter
-import com.judge.qualimaster.data.FirestoreBaseRepository
+// import com.judge.qualimaster.data.FirestoreBaseRepository
 import com.judge.qualimaster.databinding.ActivityHomeBinding
 import com.judge.qualimaster.ui.viewmodels.HomeViewModel
 import com.judge.qualimaster.util.Constants.COMPETITION_ID_BUNDLE
@@ -28,45 +28,44 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
 
-    @Inject
-    lateinit var repository: Repository
     lateinit var binding: ActivityHomeBinding
+    private val viewModel: HomeViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val viewModel: HomeViewModel by viewModels()
-        //val comps = runBlocking{ viewModel.getAllCompetitions() } as Result.Success // TODO remove runBlocking!!
-        val repo = FirestoreBaseRepository()
+        // val viewModel: HomeViewModel by viewModels()
 
         lifecycleScope.launchWhenCreated {
-            showProgressBar(true)
+            display()
+        }
+    }
 
-            when (val comps = repo.getAllCompetitions()) {
-                is Result.Error -> Toast.makeText(this@HomeActivity, comps.msg, Toast.LENGTH_LONG)
-                    .show()
-                is Result.Success -> {
-                    val adapter = CompetitionsRecyclerviewAdapter(comps.value) { competitionId ->
-                        val bundle = Bundle()
-                        bundle.putString(COMPETITION_ID_BUNDLE, competitionId)
-                        val intent = Intent(this@HomeActivity, QualificationActivity::class.java)
-                        intent.putExtras(bundle)
-                        startActivity(intent)
-                    }
+    private suspend fun display() {
+        showProgressBar(true)
 
-                    binding.rvCompetitions.let {
-                        it.adapter = adapter
-                        it.layoutManager = LinearLayoutManager(this@HomeActivity)
-                    }
+        when (val comps = viewModel.getAllCompetitions()) {
+            is Result.Error -> Toast.makeText(this@HomeActivity, comps.msg, Toast.LENGTH_LONG)
+                .show()
+            is Result.Success -> {
+                val adapter = CompetitionsRecyclerviewAdapter(comps.value) { competitionId ->
+                    val bundle = Bundle()
+                    bundle.putString(COMPETITION_ID_BUNDLE, competitionId)
+                    val intent = Intent(this@HomeActivity, QualificationActivity::class.java)
+                    intent.putExtras(bundle)
+                    startActivity(intent)
+                }
+
+                binding.rvCompetitions.let {
+                    it.adapter = adapter
+                    it.layoutManager = LinearLayoutManager(this@HomeActivity)
                 }
             }
-
-            showProgressBar(false)
         }
 
-
+        showProgressBar(false)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -76,15 +75,14 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId) {
-            R.id.miOpenFile -> {
-                getContent.launch("text/*")
-                true
-            }
+//            R.id.miOpenFile -> {
+//                getContent.launch("text/*")
+//                true
+//            }
             R.id.miRefresh -> {
                 lifecycleScope.launchWhenStarted {
                     showProgressBar(true)
-                    delay(1000)
-//                    repository.sync()
+                    display()
                     showProgressBar(false)
                 }
                 true

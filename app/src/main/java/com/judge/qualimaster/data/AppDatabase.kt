@@ -11,7 +11,7 @@ import com.judge.qualimaster.util.Constants.DATABASE_NAME
 
 @Database(
     entities = [AthleteEntity::class, CategoryEntity::class, CompetitionEntity::class],
-    version = 8
+    version = 9
 )
 abstract class AppDatabase : RoomDatabase() {
 

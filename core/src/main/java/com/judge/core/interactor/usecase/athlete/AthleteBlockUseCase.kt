@@ -11,8 +11,8 @@ class AthleteBlockUseCase {
        for (category in comp.categories) {
            val itemsCategory = mutableListOf<AthleteListItem>()
            val athletesOfCategory = athletes
-               .filter { athlete -> athlete.category.categoryId == category.categoryId } // TODO: should be == not != !!!
-               .sortedByDescending { athlete ->  athlete.startOrder}
+               .filter { athlete -> athlete.categoryName == category.name }
+               .sortedByDescending { athlete ->  athlete.startOrder }
            if (athletesOfCategory.isNotEmpty()) {
                itemsCategory.add(AthleteListItem.CategoryItem(category))
                itemsCategory.addAll(athletesOfCategory.map { AthleteListItem.AthleteItem(it)})

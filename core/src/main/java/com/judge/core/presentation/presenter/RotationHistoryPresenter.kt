@@ -30,7 +30,7 @@ class RotationHistoryPresenter(
 
     init {
         externalScope.launch {
-            // refresh()
+            refresh()
 
             // TODO when refreshing show rebuild list
 

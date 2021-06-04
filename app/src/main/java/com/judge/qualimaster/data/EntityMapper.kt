@@ -8,19 +8,22 @@ import com.judge.qualimaster.data.entities.CategoryEntity
 import com.judge.qualimaster.data.entities.CompetitionEntity
 
 fun AthleteEntity.toAthlete(): Athlete {
-    return Athlete(number, startOrder, firstName, lastName, licence, category, competitionId)
+    return Athlete(competitionId, number, startOrder, firstName, lastName, licence, categoryName)
 }
 
 fun Athlete.toEntity(): AthleteEntity {
-    return AthleteEntity(competitionId, number, startOrder, firstName, lastName, licence, category)
+    return AthleteEntity(
+        competitionId, number, startOrder, firstName, lastName, licence,
+        categoryName
+    )
 }
 
 fun CategoryEntity.toCategory(): Category {
-    return Category(categoryId, name, numOfAthletes, competitionId)
+    return Category(name, numOfAthletes, competitionId)
 }
 
 fun Category.toEntity(): CategoryEntity {
-    return CategoryEntity(name, numOfAthletes, competitionId, categoryId)
+    return CategoryEntity(name, numOfAthletes, competitionId)
 }
 
 fun CompetitionEntity.toCompetition(categories: List<Category>): Competition {

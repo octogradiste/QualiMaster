@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat
 import java.util.logging.SimpleFormatter
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import kotlin.math.atan
 
 class BaseRepositoryImpl(private val athleteDao: AthleteDao) : BaseRepository {
 
@@ -62,6 +63,43 @@ class BaseRepositoryImpl(private val athleteDao: AthleteDao) : BaseRepository {
             }
 
         return competitionsDeferred.await()
+    }
+
+    override suspend fun uploadNewCompetition(
+        competition: Competition,
+        athletes: List<Athlete>
+    ): Response {
+        val ref = db.collection(COMPETITION_COLLECTION).document()
+        val competitionUpload = CompletableDeferred<Response>()
+        ref.set(mapOf(
+            Pair(COMP_NAME, competition.name),
+            Pair(COMP_LOCATION, competition.location),
+            Pair(COMP_START_TIME, formatter.format(competition.startTime)),
+            Pair(COMP_MIN_PER_BOULDER, competition.minPerBoulder),
+            Pair(COMP_NUM_OF_ATHLETES_CLIMBING, competition.numOfAthletesClimbing),
+            Pair(COMP_NUM_OF_ATHLETES_IN_BUFFER, competition.numOfAthletesInBuffer),
+            Pair(COMP_CATEGORIES, competition.categories.map { it.name })
+        ))
+            .addOnSuccessListener {
+                competitionUpload.complete(Response.Success("Successfully uploaded competition."))
+            }
+            .addOnFailureListener {
+                competitionUpload.complete(Response.Error("Competition upload failed."))
+            }
+
+        val competitionId = ref.id
+        for (athlete in athletes) {
+            ref.collection(ATHLETE_COLLECTION).add(mapOf(
+                    Pair(ATHLETE_NUMBER, athlete.number),
+                    Pair(ATHLETE_START_ORDER, athlete.startOrder),
+                    Pair(ATHLETE_FIRST_NAME, athlete.firstName),
+                    Pair(ATHLETE_LAST_NAME, athlete.lastName),
+                    Pair(ATHLETE_LICENCE, athlete.licence),
+                    Pair(ATHLETE_CATEGORY, athlete.categoryName),
+                ))
+        }
+
+        return competitionUpload.await()
     }
 
     override suspend fun insertAthletes(athletes: List<Athlete>): Response {

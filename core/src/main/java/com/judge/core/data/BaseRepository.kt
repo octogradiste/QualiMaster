@@ -19,6 +19,8 @@ interface BaseRepository {
 
     suspend fun getAllCompetitions(): Result<List<Competition>>
 
+    suspend fun uploadNewCompetition(competition: Competition, athletes: List<Athlete>): Response
+
     suspend fun insertAthletes(athletes: List<Athlete>): Response
 
     suspend fun insertCategories(categories: List<Category>): Response

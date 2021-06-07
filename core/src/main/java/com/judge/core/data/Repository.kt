@@ -15,6 +15,9 @@ class Repository(
 
     suspend fun getAllCompetitions() = baseRepository.getAllCompetitions()
 
+    suspend fun uploadNewCompetition(competition: Competition, athletes: List<Athlete>) =
+        baseRepository.uploadNewCompetition(competition, athletes)
+
     suspend fun refreshCompetition(competitionId: String) =
             baseRepository.refreshCompetition(competitionId)
 

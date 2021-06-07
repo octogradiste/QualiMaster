@@ -13,13 +13,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.judge.core.data.Repository
+import com.judge.core.domain.result.Response
 import com.judge.core.domain.result.Result
+import com.judge.core.io.QualificationFileParser
 import com.judge.qualimaster.R
 import com.judge.qualimaster.adapter.CompetitionsRecyclerviewAdapter
 // import com.judge.qualimaster.data.FirestoreBaseRepository
 import com.judge.qualimaster.databinding.ActivityHomeBinding
+import com.judge.qualimaster.io.LineReaderImpl
 import com.judge.qualimaster.ui.viewmodels.HomeViewModel
 import com.judge.qualimaster.util.Constants.COMPETITION_ID_BUNDLE
+import com.judge.qualimaster.util.TimeFormatterImpl
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -35,8 +39,6 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        // val viewModel: HomeViewModel by viewModels()
 
         lifecycleScope.launchWhenCreated {
             display()
@@ -69,21 +71,19 @@ class HomeActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.qualification_menu, menu)
+        menuInflater.inflate(R.menu.home_menu, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId) {
-//            R.id.miOpenFile -> {
-//                getContent.launch("text/*")
-//                true
-//            }
+            R.id.miOpenFile -> {
+                getContent.launch("text/*")
+                true
+            }
             R.id.miRefresh -> {
                 lifecycleScope.launchWhenStarted {
-                    showProgressBar(true)
                     display()
-                    showProgressBar(false)
                 }
                 true
             }
@@ -105,12 +105,24 @@ class HomeActivity : AppCompatActivity() {
         val inputStream = contentResolver.openInputStream(uri)
 
         if (inputStream != null) {
-//            val reader = CSVReader(inputStream)
-//            val athletes = reader.getAthletes()
-//            athleteDao.insertAthletes(athletes)
-            Toast.makeText(this, "Successfully loaded CSV", Toast.LENGTH_SHORT).show()
+            val parser = QualificationFileParser()
+            val lineReader = LineReaderImpl(inputStream)
+            val timeFormatter = TimeFormatterImpl("yyyy-MM-dd HH:mm:ss")
+            when (val result = parser.parse(lineReader, timeFormatter)) {
+                is Result.Success -> {
+                    val competition = result.value.first
+                    val athletes = result.value.second
+                    when (val response = viewModel.uploadNewCompetition(competition, athletes)) {
+                        is Response.Success -> Toast.makeText(this, "Successfully loaded CSV", Toast.LENGTH_SHORT).show()
+                        is Response.Error -> Toast.makeText(this, response.msg, Toast.LENGTH_SHORT).show()
+                    }
+                }
+                is Result.Error -> {
+                    Toast.makeText(this, result.msg, Toast.LENGTH_SHORT).show()
+                }
+            }
         } else {
-            Toast.makeText(this, "Problem while loading file in ${uri.path}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Problem while reading file in ${uri.path}", Toast.LENGTH_SHORT).show()
         }
     }
 
